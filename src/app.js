@@ -16,7 +16,7 @@ app.use(morgan("dev"));
 app.get("/", (req, res) => res.send("Hello World!"));
 
 app.use("/prueba", pruebaRoutes);
-app.use("/usuario", usuarioRoutes);
+app.use("/usuarios", usuarioRoutes);
 
 
 export default app;
