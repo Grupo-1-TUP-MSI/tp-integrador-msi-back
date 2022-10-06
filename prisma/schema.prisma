@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model prueba {
+  id     Int     @id
+  nombre String?
+}
+
+model categorias {
+  id        Int         @id @default(autoincrement())
+  nombre    String?     @db.VarChar(255)
+  productos productos[]
+}
+
+model clientes {
+  id              Int             @id @default(autoincrement())
+  nombre          String?         @db.VarChar(100)
+  tipoiva         String?         @db.Char(1)
+  idtipodocumento Int?
+  documento       Int?
+  calle           String?         @db.VarChar(50)
+  numero          Int?
+  departamento    String?         @db.VarChar(10)
+  barrio          String?         @db.VarChar(30)
+  cp              String?         @db.VarChar(20)
+  telefono        String?         @db.VarChar(30)
+  email           String?         @db.VarChar(30)
+  estado          Boolean?
+  tipodocumentos  tipodocumentos? @relation(fields: [idtipodocumento], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  facturas        facturas[]
+}
+
+model detallefactura {
+  id         Int        @id @default(autoincrement())
+  idproducto Int?
+  idfactura  Int?
+  cantidad   Int?
+  precio     Decimal?   @db.Decimal(13, 2)
+  descuento  Int?
+  facturas   facturas?  @relation(fields: [idfactura], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  productos  productos? @relation(fields: [idproducto], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model detallenp {
+  id               Int            @id @default(autoincrement())
+  idproducto       Int?
+  idnp             Int?
+  cantidadpedida   Int?
+  cantidadrecibida Int?
+  precio           Decimal?       @db.Decimal(13, 2)
+  descuento        Int?
+  estado           Boolean?
+  notasdepedido    notasdepedido? @relation(fields: [idnp], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  productos        productos?     @relation(fields: [idproducto], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model facturas {
+  id               Int              @id @default(autoincrement())
+  fecha            DateTime?        @db.Timestamp(6)
+  idpuntoventa     Int?
+  numero           Int?
+  fechavencimiento DateTime?        @db.Timestamp(6)
+  idusuario        Int?
+  idcliente        Int?
+  clientes         clientes?        @relation(fields: [idcliente], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  puntoventas      puntoventas?     @relation(fields: [idpuntoventa], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuarios         usuarios?        @relation(fields: [idusuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  detallefactura   detallefactura[]
+}
+
+model notasdepedido {
+  id          Int          @id @default(autoincrement())
+  fecha       DateTime?    @db.Timestamp(6)
+  numero      Int?
+  vencimiento DateTime?    @db.Timestamp(6)
+  idusuario   Int?
+  idproveedor Int?
+  proveedores proveedores? @relation(fields: [idproveedor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuarios    usuarios?    @relation(fields: [idusuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  detallenp   detallenp[]
+}
+
+model productos {
+  id             Int              @id @default(autoincrement())
+  nombre         String?          @db.VarChar(255)
+  precio         Decimal?         @db.Decimal(13, 2)
+  stock          Int?
+  stockminimo    Int?
+  idcategoria    Int?
+  estado         Boolean?
+  categorias     categorias?      @relation(fields: [idcategoria], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  detallefactura detallefactura[]
+  detallenp      detallenp[]
+}
+
+model proveedores {
+  id              Int             @id @default(autoincrement())
+  nombre          String?         @db.VarChar(100)
+  tipoiva         String?         @db.Char(1)
+  idtipodocumento Int?
+  documento       Int?
+  calle           String?         @db.VarChar(50)
+  numero          Int?
+  departamento    String?         @db.VarChar(10)
+  barrio          String?         @db.VarChar(30)
+  cp              String?         @db.VarChar(20)
+  telefono        String?         @db.VarChar(30)
+  email           String?         @db.VarChar(30)
+  estado          Boolean?
+  tipodocumentos  tipodocumentos? @relation(fields: [idtipodocumento], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  notasdepedido   notasdepedido[]
+}
+
+model puntoventas {
+  id       Int        @id @default(autoincrement())
+  punto    String?    @db.VarChar(50)
+  facturas facturas[]
+}
+
+model roles {
+  id       Int        @id @default(autoincrement())
+  rol      String?    @db.VarChar(50)
+  usuarios usuarios[]
+}
+
+model tipodocumentos {
+  id          Int           @id @default(autoincrement())
+  tipo        String?       @db.VarChar(20)
+  clientes    clientes[]
+  proveedores proveedores[]
+}
+
+model usuarios {
+  id            Int             @id @default(autoincrement())
+  usuario       String?         @db.VarChar(50)
+  contrase_a    String?         @map("contraseña") @db.VarChar(50)
+  idrol         Int?
+  roles         roles?          @relation(fields: [idrol], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  facturas      facturas[]
+  notasdepedido notasdepedido[]
+}
