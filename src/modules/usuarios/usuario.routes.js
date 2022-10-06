@@ -6,7 +6,6 @@ import {
   updateUsuario,
   deleteUsuario,
   login,
-  signup,
 } from "./usuario.controller";
 const router = Router();
 
@@ -16,6 +15,5 @@ router.post("/", createUsuario);
 router.put("/:id", updateUsuario);
 router.delete("/:id", deleteUsuario);
 router.post("/login", login);
-router.post("/signup", signup);
 
 export default router;

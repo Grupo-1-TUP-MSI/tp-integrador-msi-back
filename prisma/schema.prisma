@@ -7,11 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model prueba {
-  id     Int     @id
-  nombre String?
-}
-
 model categorias {
   id        Int         @id @default(autoincrement())
   nombre    String?     @db.VarChar(255)
@@ -117,6 +112,14 @@ model proveedores {
   notasdepedido   notasdepedido[]
 }
 
+model prueba {
+  id       Int      @id
+  nombre   String?
+  estado   Boolean?
+  apellido String?
+  telefono Int?
+}
+
 model puntoventas {
   id       Int        @id @default(autoincrement())
   punto    String?    @db.VarChar(50)
@@ -139,8 +142,9 @@ model tipodocumentos {
 model usuarios {
   id            Int             @id @default(autoincrement())
   usuario       String?         @db.VarChar(50)
-  contrase_a    String?         @map("contraseña") @db.VarChar(50)
+  password      String?         @db.VarChar(50)
   idrol         Int?
+  estado        Boolean?
   roles         roles?          @relation(fields: [idrol], references: [id], onDelete: NoAction, onUpdate: NoAction)
   facturas      facturas[]
   notasdepedido notasdepedido[]

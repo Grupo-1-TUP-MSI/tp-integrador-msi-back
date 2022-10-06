@@ -2,74 +2,85 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const getPruebas = async (req, res) => {
-  prisma.prueba.findMany().then((data) => {
-    res.send(data);
-  })
+  const pruebas = await prisma.prueba.findMany();
+  res.json(pruebas);
 };
 
 const getPrueba = async (req, res) => {
   const { id } = req.params;
-  prisma.prueba.findUnique({
-    where: {
-      id: parseInt(id),
-    },
-  }).then((data) => {
-    res.send(data);
-  })
+  try {
+    const prueba = await prisma.prueba.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+    res.json(prueba);
+  } catch (error) {
+    res.json({ data: null, status: 404 });
+  }
 };
 
 const createPrueba = async (req, res) => {
   const getId = () => {
     return Math.floor(Math.random() * 1000000);
   };
-  const { nombre } = req.body;
+  const { nombre, estado, apellido, telefono } = req.body;
+
   try {
-    const data = await prisma.prueba.create({
+    const prueba = await prisma.prueba.create({
       data: {
         id: getId(),
         nombre,
+        estado,
+        apellido,
+        telefono,
       },
     });
-    res.json(data);
+    res.json(prueba);
   } catch (error) {
-    console.log(error);
+    res.json({ data: null, status: 404 });
   }
-};
+}
 
 const updatePrueba = async (req, res) => {
   const { id } = req.params;
-  const { nombre } = req.body;
+  const { nombre, estado, apellido, telefono } = req.body;
   try {
-    const data = await prisma.prueba.update({
+    const prueba = await prisma.prueba.update({
       where: {
         id: parseInt(id),
       },
       data: {
         nombre,
+        estado,
+        apellido,
+        telefono,
       },
     });
-    res.json(data);
+    res.json(prueba);
   } catch (error) {
-    console.log(error);
+    res.json({ data: null, status: 404 });
   }
 };
 
 const deletePrueba = async (req, res) => {
   const { id } = req.params;
   try {
-    const data = await prisma.prueba.delete({
+    const prueba = await prisma.prueba.delete({
       where: {
         id: parseInt(id),
       },
     });
-    res.json(data);
+    res.json(prueba);
   } catch (error) {
-    console.log(error);
+    res.json({ data: null, status: 404 });
   }
 };
 
 export {
   getPruebas,
   getPrueba,
-  createPrueba
+  createPrueba,
+  updatePrueba,
+  deletePrueba,
 }

@@ -2,120 +2,102 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const getUsuarios = async (req, res) => {
-  prisma.usuario.findMany().then((data) => {
-    res.send(data);
-  })
-}
+  try {
+    const data = await prisma.usuarios.findMany();
+    res.json({ data, status: 200 });
+  } catch (error) {
+    res.json({ data: null, status: 404 });
+  }
+};
 
 const getUsuario = async (req, res) => {
   const { id } = req.params;
-  prisma.usuario.findUnique({
-    where: {
-      id: parseInt(id),
-    },
-  }).then((data) => {
-    res.send(data);
-  })
-}
-
-const createUsuario = async (req, res) => {
-  const getId = () => {
-    return Math.floor(Math.random() * 1000000);
-  };
-  const { nombre, apellido, email, password } = req.body;
   try {
-    const data = await prisma.usuario.create({
-      data: {
-        id: getId(),
-        nombre,
-        apellido,
-        email,
-        password,
+    const data = await prisma.usuarios.findUnique({
+      where: {
+        id: parseInt(id),
       },
     });
-    res.json(data);
+    res.json({ data, status: 200 });
   } catch (error) {
-    console.log(error);
+    res.json({ data: null, status: 404 });
   }
-}
+};
+
+const createUsuario = async (req, res) => {
+  const { usuario, password, idRol} = req.body;
+  try {
+    // Mejorar validacion de password
+    // Mejorar: Encriptar la contraseña y compararla con la encriptada
+    const data = await prisma.usuarios.create({
+      data: {
+        usuario,
+        password,
+        idRol,
+        estado: true,
+      },
+    });
+    res.json({ data, status: 200 });
+  } catch (error) {
+    res.json({ data: null, status: 404 });
+  }
+};
 
 const updateUsuario = async (req, res) => {
   const { id } = req.params;
-  const { nombre, apellido, email, password } = req.body;
+  const { usuario, password, idRol, estado } = req.body;
   try {
-    const data = await prisma.usuario.update({
+    const data = await prisma.usuarios.update({
       where: {
         id: parseInt(id),
       },
       data: {
-        nombre,
-        apellido,
-        email,
+        usuario,
         password,
+        idRol,
+        estado,
       },
     });
-    res.json(data);
+    res.json({ data, status: 200 });
   } catch (error) {
-    console.log(error);
+    res.json({ data: null, status: 404 });
   }
-}
+};
 
 const deleteUsuario = async (req, res) => {
   const { id } = req.params;
-  // logic delete
   try {
-    const data = await prisma.usuario.update({
+    // logic delete
+    const data = await prisma.usuarios.update({
       where: {
         id: parseInt(id),
       },
       data: {
-        deleted: true,
+        estado: false,
       },
     });
-    res.json(data);
+    res.json({ data, status: 200 });
   } catch (error) {
-    console.log(error);
+    res.json({ data: null, status: 404 });
   }
-}
+};
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { usuario, password } = req.body;
+  // Mejorar: Encriptar la contraseña y compararla con la encriptada
   try {
-    const data = await prisma.usuario.findUnique({
+    const data = await prisma.usuarios.findFirst({
       where: {
-        email,
-      },
-    });
-    if (data.password === password) {
-      res.json(data);
-    } else {
-      res.json({ message: "Contraseña incorrecta" });
-    }
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-const signup = async (req, res) => {
-  const getId = () => {
-    return Math.floor(Math.random() * 1000000);
-  };
-  const { nombre, apellido, email, password } = req.body;
-  try {
-    const data = await prisma.usuario.create({
-      data: {
-        id: getId(),
-        nombre,
-        apellido,
-        email,
+        usuario,
         password,
+        estado: true,
       },
     });
-    res.json(data);
+    res.json({ data, status: 200 });
   } catch (error) {
-    console.log(error);
+    res.json({ data: null, status: 404 });
   }
-}
+};
 
 export {
   getUsuarios,
@@ -124,5 +106,4 @@ export {
   updateUsuario,
   deleteUsuario,
   login,
-  signup,
 }
