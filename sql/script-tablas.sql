@@ -51,7 +51,7 @@ CREATE TABLE Productos (
 	,Precio DECIMAL(13, 2)
 	,Stock INT
 	,StockMinimo INT
-	,idProducto INT REFERENCES Proveedores(ID)
+	,idProveedor INT REFERENCES Proveedores(ID)
 	,Estado bool
 	)
 

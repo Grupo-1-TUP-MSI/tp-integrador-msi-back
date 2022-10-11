@@ -85,9 +85,9 @@ model productos {
   precio         Decimal?         @db.Decimal(13, 2)
   stock          Int?
   stockminimo    Int?
-  idproducto     Int?
+  idProveedor    Int?
   estado         Boolean?
-  proveedores    proveedores?     @relation(fields: [idproducto], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proveedores    proveedores?     @relation(fields: [idProveedor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "productos_idproducto_fkey")
   detallefactura detallefactura[]
   detallenp      detallenp[]
 }
