@@ -85,18 +85,32 @@ const deleteUsuario = async (req, res) => {
 const login = async (req, res) => {
   console.log(req.body);
   const { usuario, password } = req.body;
-  // Mejorar: Encriptar la contraseña y compararla con la encriptada
-  try {
-    const data = await prisma.usuarios.findFirst({
-      where: {
-        usuario,
-        password,
-        estado: true,
-      },
-    });
-    res.json({ data, status: 200 });
-  } catch (error) {
-    res.json({ mensaje: 'Error al iniciar sesión', status: 400 });
+
+  if(!usuario || !password) {
+    res.json({ mensaje: 'Usuario y/o contraseña incorrectos', status: 400 });
+  } else {
+    // Mejorar: Encriptar la contraseña y compararla con la encriptada
+    try {
+      const data = await prisma.usuarios.findFirst({
+        where: {
+          usuario,
+          password,
+          estado: true
+        },
+        include: {
+          roles: true,
+        },
+      });
+      if(data) {
+        const { id, roles:{rol} } = data;
+        res.json({ id, usuario, rol , status: 200 });
+      } else {
+        res.json({ mensaje: 'Usuario o contraseña incorrectos', status: 400 });
+      }
+      // res.json({ data, status: 200 });
+    } catch (error) {
+      res.json({ mensaje: 'Error al iniciar sesión', status: 400 });
+    }
   }
 };
 
