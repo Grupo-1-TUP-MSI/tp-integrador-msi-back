@@ -84,13 +84,13 @@ const deleteUsuario = async (req, res) => {
 
 const login = async (req, res) => {
   console.log(req.body);
-  const { user, pass } = req.body;
+  const { usuario, password } = req.body;
   // Mejorar: Encriptar la contraseña y compararla con la encriptada
   try {
     const data = await prisma.usuarios.findFirst({
       where: {
-        usuario: user,
-        password: pass,
+        usuario,
+        password
       },
       include: {
         roles: true,
