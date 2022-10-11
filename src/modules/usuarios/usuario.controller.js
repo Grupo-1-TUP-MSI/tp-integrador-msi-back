@@ -94,7 +94,8 @@ const login = async (req, res) => {
       const data = await prisma.usuarios.findFirst({
         where: {
           usuario,
-          password
+          password,
+          estado: true
         },
         include: {
           roles: true,
