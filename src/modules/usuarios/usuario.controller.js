@@ -96,8 +96,8 @@ const login = async (req, res) => {
         roles: true,
       },
     });
-    const { id, usuario, idrol, roles:{rol} } = data;
-    res.json({ id, usuario, idrol, rol , status: 200 });
+    const { id, usuario, roles:{rol} } = data;
+    res.json({ id, usuario, rol , status: 200 });
     // res.json({ data, status: 200 });
   } catch (error) {
     res.json({ mensaje: 'Error al iniciar sesión', status: 400 });
