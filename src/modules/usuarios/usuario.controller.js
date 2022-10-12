@@ -48,6 +48,7 @@ const createUsuario = async (req, res) => {
       data: {
         usuario,
         password,
+        estado: true,
         roles: {
           connect: {
             id: parseInt(idRol),
