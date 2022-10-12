@@ -28,8 +28,12 @@ const getUsuario = async (req, res) => {
       where: {
         id: parseInt(id),
       },
+      include: {
+        roles: true,
+      },
     });
-    res.json({ data, status: 200 });
+    const { id, usuario, roles:{rol}, estado } = data;
+    res.json({ data: { id, usuario, rol, estado }, status: 200 });
   } catch (error) {
     res.json({ mensaje: 'Error al obtener usuario', status: 400 });
   }
@@ -48,6 +52,7 @@ const createUsuario = async (req, res) => {
         estado: true,
       },
     });
+    
     res.json({ mensaje: 'Usuario registrado correctamente', status: 200 });
   } catch (error) {
     res.json({ mensaje: 'Error al crear usuario', status: 400 });
