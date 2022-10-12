@@ -32,7 +32,7 @@ const getUsuario = async (req, res) => {
         roles: true,
       },
     });
-    const { id, usuario, roles:{rol}, estado } = data;
+    const { usuario, roles:{rol}, estado } = data;
     res.json({ data: { id, usuario, rol, estado }, status: 200 });
   } catch (error) {
     res.json({ mensaje: 'Error al obtener usuario', status: 400 });
@@ -73,8 +73,12 @@ const updateUsuario = async (req, res) => {
       data: {
         usuario,
         password,
-        idRol,
-        estado: true
+        estado,
+        roles: {
+          connect: {
+            id: parseInt(idRol),
+          },
+        },
       },
     });
     res.json({ mensaje: 'Usuario actualizado correctamente', status: 200 });
