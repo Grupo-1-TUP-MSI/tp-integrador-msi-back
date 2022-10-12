@@ -154,7 +154,7 @@ VALUES ('PEND_ACEPTACION')
 
 INSERT INTO Usuarios (
 	Usuario
-	,Contraseña
+	,Password
 	,IdRol
 	,Estado
 	)
