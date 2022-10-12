@@ -132,7 +132,7 @@ model tipodocumentos {
 model usuarios {
   id            Int             @id @default(autoincrement())
   usuario       String?         @db.VarChar(50)
-  contrase_a    String?         @map("contraseña") @db.VarChar(50)
+  password      String?         @db.VarChar(50)
   idrol         Int?
   estado        Boolean?
   roles         roles?          @relation(fields: [idrol], references: [id], onDelete: NoAction, onUpdate: NoAction)
