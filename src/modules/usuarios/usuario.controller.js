@@ -3,8 +3,19 @@ const prisma = new PrismaClient();
 
 const getUsuarios = async (req, res) => {
   try {
-    const data = await prisma.usuarios.findMany();
-    res.json({ data, status: 200 });
+    // const data = await prisma.usuarios.findMany();
+    // res.json({ data, status: 200 });
+    const usuarios = [];
+    const data = await prisma.usuarios.findMany({
+      include: {
+        roles: true,
+      }
+    });
+    data.forEach(user => {
+      const { id, usuario, roles:{rol}, estado } = user;
+      usuarios.push({ id, usuario, rol, estado });
+    });
+    res.json({ data: usuarios, status: 200 });
   } catch (error) {
     res.json({ mensaje: 'Error al obtener usuarios', status: 400 });
   }
