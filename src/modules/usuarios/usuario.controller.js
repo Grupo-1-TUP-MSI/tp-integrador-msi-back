@@ -7,6 +7,9 @@ const getUsuarios = async (req, res) => {
     // res.json({ data, status: 200 });
     const usuarios = [];
     const data = await prisma.usuarios.findMany({
+      where: {
+        estado: true
+      },
       include: {
         roles: true,
       }
