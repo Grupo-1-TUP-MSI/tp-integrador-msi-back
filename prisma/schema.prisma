@@ -7,22 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model categorias {
-  id        Int         @id @default(autoincrement())
-  nombre    String?     @db.VarChar(255)
-  productos productos[]
-}
-
 model clientes {
   id              Int             @id @default(autoincrement())
   nombre          String?         @db.VarChar(100)
   tipoiva         String?         @db.Char(1)
   idtipodocumento Int?
   documento       Int?
-  calle           String?         @db.VarChar(50)
-  numero          Int?
-  departamento    String?         @db.VarChar(10)
-  barrio          String?         @db.VarChar(30)
+  direccion       String?         @db.VarChar(255)
   cp              String?         @db.VarChar(20)
   telefono        String?         @db.VarChar(30)
   email           String?         @db.VarChar(30)
@@ -58,27 +49,34 @@ model detallenp {
 model facturas {
   id               Int              @id @default(autoincrement())
   fecha            DateTime?        @db.Timestamp(6)
-  idpuntoventa     Int?
+  idtipoventa      Int?
+  idtipopago       Int?
   numero           Int?
   fechavencimiento DateTime?        @db.Timestamp(6)
   idusuario        Int?
   idcliente        Int?
+  estado           Boolean?
   clientes         clientes?        @relation(fields: [idcliente], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  puntoventas      puntoventas?     @relation(fields: [idpuntoventa], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tipospago        tipospago?       @relation(fields: [idtipopago], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tiposventa       tiposventa?      @relation(fields: [idtipoventa], references: [id], onDelete: NoAction, onUpdate: NoAction)
   usuarios         usuarios?        @relation(fields: [idusuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
   detallefactura   detallefactura[]
 }
 
 model notasdepedido {
-  id          Int          @id @default(autoincrement())
-  fecha       DateTime?    @db.Timestamp(6)
-  numero      Int?
-  vencimiento DateTime?    @db.Timestamp(6)
-  idusuario   Int?
-  idproveedor Int?
-  proveedores proveedores? @relation(fields: [idproveedor], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  usuarios    usuarios?    @relation(fields: [idusuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  detallenp   detallenp[]
+  id           Int          @id @default(autoincrement())
+  fecha        DateTime?    @db.Timestamp(6)
+  numero       Int?
+  vencimiento  DateTime?    @db.Timestamp(6)
+  idusuario    Int?
+  idproveedor  Int?
+  idestadonp   Int?
+  idtipocompra Int?
+  estadonp     estadonp?    @relation(fields: [idestadonp], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proveedores  proveedores? @relation(fields: [idproveedor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tiposcompra  tiposcompra? @relation(fields: [idtipocompra], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuarios     usuarios?    @relation(fields: [idusuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  detallenp    detallenp[]
 }
 
 model productos {
@@ -87,9 +85,9 @@ model productos {
   precio         Decimal?         @db.Decimal(13, 2)
   stock          Int?
   stockminimo    Int?
-  idcategoria    Int?
+  idProveedor    Int?
   estado         Boolean?
-  categorias     categorias?      @relation(fields: [idcategoria], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proveedores    proveedores?     @relation(fields: [idProveedor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "productos_idproducto_fkey")
   detallefactura detallefactura[]
   detallenp      detallenp[]
 }
@@ -100,16 +98,14 @@ model proveedores {
   tipoiva         String?         @db.Char(1)
   idtipodocumento Int?
   documento       Int?
-  calle           String?         @db.VarChar(50)
-  numero          Int?
-  departamento    String?         @db.VarChar(10)
-  barrio          String?         @db.VarChar(30)
+  direccion       String?         @db.VarChar(255)
   cp              String?         @db.VarChar(20)
   telefono        String?         @db.VarChar(30)
   email           String?         @db.VarChar(30)
   estado          Boolean?
   tipodocumentos  tipodocumentos? @relation(fields: [idtipodocumento], references: [id], onDelete: NoAction, onUpdate: NoAction)
   notasdepedido   notasdepedido[]
+  productos       productos[]
 }
 
 model prueba {
@@ -118,12 +114,6 @@ model prueba {
   estado   Boolean?
   apellido String?
   telefono Int?
-}
-
-model puntoventas {
-  id       Int        @id @default(autoincrement())
-  punto    String?    @db.VarChar(50)
-  facturas facturas[]
 }
 
 model roles {
@@ -142,10 +132,34 @@ model tipodocumentos {
 model usuarios {
   id            Int             @id @default(autoincrement())
   usuario       String?         @db.VarChar(50)
-  password      String?         @db.VarChar(50)
+  contrase_a    String?         @map("contraseña") @db.VarChar(50)
   idrol         Int?
   estado        Boolean?
   roles         roles?          @relation(fields: [idrol], references: [id], onDelete: NoAction, onUpdate: NoAction)
   facturas      facturas[]
   notasdepedido notasdepedido[]
+}
+
+model estadonp {
+  id            Int             @id @default(autoincrement())
+  tipo          String?         @db.VarChar(50)
+  notasdepedido notasdepedido[]
+}
+
+model tiposcompra {
+  id            Int             @id @default(autoincrement())
+  tipo          String?         @db.VarChar(50)
+  notasdepedido notasdepedido[]
+}
+
+model tipospago {
+  id       Int        @id @default(autoincrement())
+  tipo     String?    @db.VarChar(50)
+  facturas facturas[]
+}
+
+model tiposventa {
+  id       Int        @id @default(autoincrement())
+  tipo     String?    @db.VarChar(50)
+  facturas facturas[]
 }
