@@ -48,11 +48,13 @@ const createUsuario = async (req, res) => {
       data: {
         usuario,
         password,
-        idRol,
-        estado: true,
+        roles: {
+          connect: {
+            id: parseInt(idRol),
+          },
+        },
       },
     });
-    
     res.json({ mensaje: 'Usuario registrado correctamente', status: 200 });
   } catch (error) {
     res.json({ mensaje: 'Error al crear usuario', status: 400 });
