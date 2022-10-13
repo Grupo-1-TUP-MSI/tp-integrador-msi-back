@@ -102,7 +102,6 @@ const updateUsuario = async (req, res) => {
 const deleteUsuario = async (req, res) => {
   const { id } = req.params;
   try {
-    // logic delete
     const data = await prisma.usuarios.update({
       where: {
         id: parseInt(id),
