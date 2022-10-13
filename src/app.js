@@ -5,6 +5,7 @@ import morgan from "morgan";
 
 import pruebaRoutes from "./modules/prueba/prueba.routes";
 import usuarioRoutes from "./modules/usuarios/usuario.routes";
+import authRoutes from "./modules/auth/auth.routes";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.get("/", (req, res) => res.send("Hello World!"));
 
 app.use("/prueba", pruebaRoutes);
 app.use("/usuarios", usuarioRoutes);
+app.use("/auth", authRoutes);
 
 
 export default app;

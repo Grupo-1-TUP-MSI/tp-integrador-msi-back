@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { encryptPassword } from '../auth/auth.controller'
 const prisma = new PrismaClient();
 
 const getUsuarios = async (req, res) => {
@@ -15,9 +16,9 @@ const getUsuarios = async (req, res) => {
       const { id, usuario, roles:{rol}, estado } = user;
       usuarios.push({ id, usuario, rol, estado });
     });
-    res.json({ data: usuarios, status: 200 });
+    res.status(200).json({ data: usuarios, status: 200 });
   } catch (error) {
-    res.json({ mensaje: 'Error al obtener usuarios', status: 400 });
+    res.status(400).json({ mensaje: 'Error al obtener usuarios', status: 400 });
   }
 };
 
@@ -33,9 +34,9 @@ const getUsuario = async (req, res) => {
       },
     });
     const { usuario, roles:{rol}, estado } = data;
-    res.json({ data: { id, usuario, rol, estado }, status: 200 });
+    res.status(200).json({ data: { id, usuario, rol, estado }, status: 200 });
   } catch (error) {
-    res.json({ mensaje: 'Error al obtener usuario', status: 400 });
+    res.status(400).json({ mensaje: 'Error al obtener usuario', status: 400 });
   }
 };
 
@@ -44,21 +45,32 @@ const createUsuario = async (req, res) => {
   try {
     // Mejorar validacion de password
     // Mejorar: Encriptar la contraseña y compararla con la encriptada
-    const data = await prisma.usuarios.create({
-      data: {
+
+    const user = await prisma.usuarios.findFirst({
+      where: {
         usuario,
-        password,
-        estado: true,
-        roles: {
-          connect: {
-            id: parseInt(idRol),
-          },
-        },
       },
     });
-    res.json({ mensaje: 'Usuario registrado correctamente', status: 200 });
+
+    if (user) {
+      return res.status(400).json({ mensaje: 'El usuario ya existe', status: 400 });
+    } else {
+      const data = await prisma.usuarios.create({
+        data: {
+          usuario,
+          password: await encryptPassword(password),
+          estado: true,
+          roles: {
+            connect: {
+              id: parseInt(idRol),
+            },
+          },
+        },
+      });
+      res.status(200).json({ mensaje: 'Usuario registrado correctamente', status: 200 });
+    }
   } catch (error) {
-    res.json({ mensaje: 'Error al crear usuario', status: 400 });
+    res.status(400).json({ mensaje: 'Error al crear usuario', status: 400 });
   }
 };
 
@@ -81,9 +93,9 @@ const updateUsuario = async (req, res) => {
         },
       },
     });
-    res.json({ mensaje: 'Usuario actualizado correctamente', status: 200 });
+    res.status(200).json({ mensaje: 'Usuario actualizado correctamente', status: 200 });
   } catch (error) {
-    res.json({ mensaje: 'Error al actualizar usuario', status: 400 });
+    res.status(400).json({ mensaje: 'Error al actualizar usuario', status: 400 });
   }
 };
 
@@ -99,41 +111,9 @@ const deleteUsuario = async (req, res) => {
         estado: false,
       },
     });
-    res.json({ mensaje: 'Usuario eliminado correctamente', status: 200 });
+    res.status(200).json({ mensaje: 'Usuario eliminado correctamente', status: 200 });
   } catch (error) {
-    res.json({ mensaje: 'Error al eliminar usuario', status: 400 });
-  }
-};
-
-const login = async (req, res) => {
-  console.log(req.body);
-  const { usuario, password } = req.body;
-
-  if(!usuario || !password) {
-    res.json({ mensaje: 'Usuario y/o contraseña incorrectos', status: 400 });
-  } else {
-    // Mejorar: Encriptar la contraseña y compararla con la encriptada
-    try {
-      const data = await prisma.usuarios.findFirst({
-        where: {
-          usuario,
-          password,
-          estado: true
-        },
-        include: {
-          roles: true,
-        },
-      });
-      if(data) {
-        const { id, roles:{rol} } = data;
-        res.json({ id, usuario, rol , status: 200 });
-      } else {
-        res.json({ mensaje: 'Usuario o contraseña incorrectos', status: 400 });
-      }
-      // res.json({ data, status: 200 });
-    } catch (error) {
-      res.json({ mensaje: 'Error al iniciar sesión', status: 400 });
-    }
+    res.status(400).json({ mensaje: 'Error al eliminar usuario', status: 400 });
   }
 };
 
@@ -143,5 +123,4 @@ export {
   createUsuario,
   updateUsuario,
   deleteUsuario,
-  login,
 }
