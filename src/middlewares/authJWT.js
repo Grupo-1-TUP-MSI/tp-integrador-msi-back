@@ -36,14 +36,14 @@ const isAdmin = async (req, res, next) => {
   });
   // console.log(user, 'user encontrado');
 
-  const rolFinded = await prisma.roles.findUnique({
+  const rolFound = await prisma.roles.findUnique({
     where: {
       id: user.idrol,
     },
   });
-  // console.log(rolFinded, 'rol encontrado');
+  // console.log(rolFound, 'rol encontrado');
 
-  if (rolFinded.rol === "ADMINISTRADOR") {
+  if (rolFound.rol === "ADMINISTRADOR") {
     next();
     return;
   }
@@ -58,14 +58,14 @@ const isComprador = async (req, res, next) => {
   });
   // console.log(user, 'user encontrado');
 
-  const rolFinded = await prisma.roles.findUnique({
+  const rolFound = await prisma.roles.findUnique({
     where: {
       id: user.idrol,
     },
   });
-  // console.log(rolFinded, 'rol encontrado');
+  // console.log(rolFound, 'rol encontrado');
 
-  if (rolFinded.rol === "COMPRADOR") {
+  if (rolFound.rol === "COMPRADOR") {
     next();
     return;
   }
@@ -80,14 +80,14 @@ const isVendedor = async (req, res, next) => {
   });
   // console.log(user, 'user encontrado');
 
-  const rolFinded = await prisma.roles.findUnique({
+  const rolFound = await prisma.roles.findUnique({
     where: {
       id: user.idrol,
     },
   });
-  // console.log(rolFinded, 'rol encontrado');
+  // console.log(rolFound, 'rol encontrado');
 
-  if (rolFinded.rol === "VENDEDOR") {
+  if (rolFound.rol === "VENDEDOR") {
     next();
     return;
   }
