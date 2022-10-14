@@ -55,11 +55,26 @@ const createCliente = async (req, res) => {
     }
     };
 
-
-
+    const deleteCliente = async (req, res) => {
+        const { id } = req.params;
+        try {
+          const data = await prisma.clientes.update({
+            where: {
+              id: parseInt(id),
+            },
+            data: {
+              estado: false,
+            },
+          });
+          res.status(200).json({ mensaje: 'Cliente eliminado correctamente', status: 200 });
+        } catch (error) {
+          res.status(400).json({ mensaje: 'Error al eliminar cliente', status: 400 });
+        }
+      };
 
 
 export {
     getClientes,
     createCliente,
+    deleteCliente
     }
