@@ -43,13 +43,14 @@ const getProducto = async (req, res) => {
 }
 
 const createProducto = async (req, res) => {
-  const { nombre, descripcion, precio, stockminimo, idProveedor } = req.body;
+  const { nombre, descripcion, precio, stock, stockminimo, idProveedor } = req.body;
   try {
     const data = await prisma.productos.create({
       data: {
         nombre,
         descripcion,
         precio: parseFloat(precio),
+        stock: parseInt(stock),
         stockminimo: parseInt(stockminimo),
         estado: true,
         proveedores: {
@@ -70,7 +71,20 @@ const updateProducto = async (req, res) => {
 }
 
 const deleteProducto = async (req, res) => {
-
+  const { id } = req.params;
+  try {
+    const data = await prisma.productos.update({
+      where: {
+        id: parseInt(id),
+      },
+      data: {
+        estado: false,
+      },
+    });
+    res.status(200).json({ mensaje: 'Producto eliminado correctamente', status: 200 });
+  } catch (error) {
+    res.status(400).json({ mensaje: 'Error al eliminar producto', status: 400 });
+  }
 }
 
 export {
