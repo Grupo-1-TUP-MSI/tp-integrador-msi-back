@@ -39,14 +39,13 @@ const getProducto = async (req, res) => {
 }
 
 const createProducto = async (req, res) => {
-  const { nombre, descripcion, precio, stock, stockminimo, idProveedor } = req.body;
+  const { nombre, descripcion, precio, stockminimo, idProveedor } = req.body;
   try {
     const data = await prisma.productos.create({
       data: {
         nombre,
         descripcion,
         precio: parseFloat(precio),
-        stock: parseInt(stock),
         stockminimo: parseInt(stockminimo),
         estado: true,
         proveedores: {
