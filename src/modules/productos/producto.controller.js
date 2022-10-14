@@ -11,8 +11,8 @@ const getProductos = async (req, res) => {
 
     const productos = []
     data.forEach(producto => {
-      const { id, nombre, precio, stock, stockminimo, proveedores:{id: idProveedor, nombre:proveedor}, estado } = producto;
-      productos.push({ id, nombre, precio, stock, stockminimo, idProveedor, proveedor, estado });
+      const { id, nombre, descripcion, precio, stock, stockminimo, proveedores:{id: idProveedor, nombre:proveedor}, estado } = producto;
+      productos.push({ id, nombre, descripcion, precio, stock, stockminimo, idProveedor, proveedor, estado });
     });
     res.status(200).json({ data: productos, status: 200 });
   } catch (error) {
@@ -31,8 +31,8 @@ const getProducto = async (req, res) => {
         proveedores: true,
       },
     });
-    const { nombre, precio, stock, stockminimo, proveedores:{id: idProveedor, nombre:proveedor}, estado } = data;
-    res.status(200).json({ data: { id, nombre, precio, stock, stockminimo, idProveedor, proveedor, estado }, status: 200 });
+    const { nombre, descripcion, precio, stock, stockminimo, proveedores:{id: idProveedor, nombre:proveedor}, estado } = data;
+    res.status(200).json({ data: { id, nombre, descripcion, precio, stock, stockminimo, idProveedor, proveedor, estado }, status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: "Error al obtener producto", status: 400 });
   }
