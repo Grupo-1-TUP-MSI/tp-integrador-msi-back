@@ -84,7 +84,7 @@ model productos {
   id             Int              @id @default(autoincrement())
   nombre         String?          @db.VarChar(50)
   precio         Decimal?         @db.Decimal(13, 2)
-  stock          Int?
+  stock          Int?             @default(0)
   stockminimo    Int?
   idProveedor    Int?
   estado         Boolean?

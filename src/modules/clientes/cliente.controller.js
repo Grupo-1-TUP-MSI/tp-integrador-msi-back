@@ -23,6 +23,9 @@ const getClientes = async (req, res) => {
 const createCliente = async (req, res) => {
     
     const { nombre, tipoiva, idtipodocumento, documento, direccion, cp, telefono, email} = req.body;
+    if(idtipodocumento == 0, documento == 0 ,tipoiva == 0 || nombre == "" || direccion == "" || cp == "" || email == ""){
+        return res.status(400).json({ mensaje: 'Debe cargar todos los campos requeridos', status: 400 });
+    }
     try {
 
   
@@ -74,8 +77,8 @@ const createCliente = async (req, res) => {
 
       const updateCliente = async (req, res) => {
         const { id } = req.params;
-        const { nombre, tipoiva, idtipodocumento, documento, direccion, cp, telefono, email } = req.body;
-        if(idtipodocumento == 0 || documento == 0 || tipoiva == 0 || nombre == "" || direccion == "" || cp == "" || email == ""){
+        const { nombre, tipoiva, direccion, cp, telefono, email } = req.body;
+        if(tipoiva == 0 || nombre == "" || direccion == "" || cp == "" || email == ""){
             return res.status(400).json({ mensaje: 'Debe cargar todos los campos requeridos', status: 400 });
         }
         try {
@@ -95,9 +98,7 @@ const createCliente = async (req, res) => {
             },
             data: {
               nombre,
-              tipoiva: parseInt(tipoiva),
-              idtipodocumento: parseInt(idtipodocumento),
-              documento: parseInt(documento),
+              tipoiva: parseInt(tipoiva),           
               direccion,
               cp,
               telefono,
