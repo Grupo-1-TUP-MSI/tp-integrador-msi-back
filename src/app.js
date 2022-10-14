@@ -5,9 +5,13 @@ import morgan from "morgan";
 
 import pruebaRoutes from "./modules/prueba/prueba.routes";
 import usuarioRoutes from "./modules/usuarios/usuario.routes";
+import proveedorRoutes from "./modules/proveedores/proveedor.routes";  
 import clienteRoutes from "./modules/clientes/cliente.routes";
 import authRoutes from "./modules/auth/auth.routes";
 import productoRoutes from "./modules/productos/producto.routes";
+
+
+
 
 const app = express();
 
@@ -25,6 +29,6 @@ app.use("/usuarios", usuarioRoutes);
 app.use("/clientes", clienteRoutes);
 app.use("/auth", authRoutes);
 app.use("/productos", productoRoutes);
-
+app.use("/proveedores", proveedorRoutes);
 
 export default app;
