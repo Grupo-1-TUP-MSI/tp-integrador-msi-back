@@ -93,7 +93,7 @@ const signIn = async (req, res) => {
       res.status(200).json({ token, fechaExpiracion: fechaExpiracionFormateada, rol: user.roles.nombre, status: 200 });
     }
   } catch (error) {
-    res.status(400).json({ mensaje: 'Error al crear usuario', status: 400 });
+    res.status(400).json({ mensaje: 'Error al encontrar usuario', status: 400 });
   }
 };
 
