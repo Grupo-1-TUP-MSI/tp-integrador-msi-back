@@ -19,10 +19,16 @@ CREATE TABLE TipoDocumentos (
 	,Tipo VARCHAR(20)
 	);
 
+CREATE TABLE TiposIVA (
+	id serial PRIMARY KEY NOT NULL
+	,tipo bpchar(1)
+	,descripcion VARCHAR(50)
+	)
+
 CREATE TABLE Clientes (
 	ID serial PRIMARY KEY NOT NULL
 	,Nombre VARCHAR(100)
-	,TipoIVA CHAR(1)
+	,TipoIVA INT REFERENCES TiposIVA(id)
 	,IdTipoDocumento INT REFERENCES TipoDocumentos(ID)
 	,Documento INT
 	,Direccion VARCHAR(255)
@@ -176,4 +182,70 @@ VALUES (
 	,3
 	,true
 	);
+
+
+
+INSERT INTO TiposIVA (
+	tipo
+	,descripcion
+	)
+VALUES (
+	'I'
+	,'Responsable Inscripto'
+	)
+	,(
+	'M'
+	,'Monotributista'
+	)
+	,(
+	'C'
+	,'Consumidor Final'
+	)
+
+INSERT INTO clientes (
+	nombre
+	,tipoiva
+	,idtipodocumento
+	,documento
+	,direccion
+	,cp
+	,telefono
+	,email
+	,estado
+	)
+VALUES (
+	'Joaquin Gimenez'
+	,2
+	,1
+	,33501176
+	,'Zapiola 77'
+	,'5000'
+	,'3585622138'
+	,'joaquin@gmail.com'
+	,true
+	)
+	,(
+	'Carlos Menem'
+	,1
+	,3
+	,12222333
+	,'Salto 30'
+	,'5800'
+	,'358111222'
+	,'elcarlo@gmail.com'
+	,true
+	)
+	,(
+	'Lionel Messi'
+	,1
+	,2
+	,31555772
+	,'Marcelo T De Alvear 1523'
+	,'5000'
+	,'3512225588'
+	,'messi@gmail.com'
+	,true
+	)
+
+
 
