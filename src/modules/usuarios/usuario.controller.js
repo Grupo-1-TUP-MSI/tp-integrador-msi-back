@@ -43,9 +43,6 @@ const getUsuario = async (req, res) => {
 const createUsuario = async (req, res) => {
   const { usuario, password, idRol} = req.body;
   try {
-    // Mejorar validacion de password
-    // Mejorar: Encriptar la contraseña y compararla con la encriptada
-
     const user = await prisma.usuarios.findFirst({
       where: {
         usuario,
@@ -86,12 +83,6 @@ const updateUsuario = async (req, res) => {
 
     if (!usuarioFound) {
       return res.status(400).json({ mensaje: 'El usuario no existe', status: 400 });
-    }
-
-    const passwordCompare = await matchPassword(password, usuarioFound.password);
-
-    if (!passwordCompare) {
-      return res.status(400).json({ mensaje: 'La contraseña no coincide', status: 400 });
     }
 
     const data = await prisma.usuarios.update({
