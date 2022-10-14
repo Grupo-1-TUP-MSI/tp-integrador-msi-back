@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { encryptPassword } from '../auth/auth.controller'
+import { encryptPassword, matchPassword } from '../auth/auth.controller'
 const prisma = new PrismaClient();
 
 const getUsuarios = async (req, res) => {
@@ -88,7 +88,7 @@ const updateUsuario = async (req, res) => {
       return res.status(400).json({ mensaje: 'El usuario no existe', status: 400 });
     }
 
-    const passwordCompare = await encryptPassword(password, usuarioFound.password);
+    const passwordCompare = await matchPassword(password, usuarioFound.password);
 
     if (!passwordCompare) {
       return res.status(400).json({ mensaje: 'La contraseña no coincide', status: 400 });
