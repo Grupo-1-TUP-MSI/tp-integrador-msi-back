@@ -82,12 +82,13 @@ model notasdepedido {
 
 model productos {
   id             Int              @id @default(autoincrement())
-  nombre         String?          @db.VarChar(255)
+  nombre         String?          @db.VarChar(50)
   precio         Decimal?         @db.Decimal(13, 2)
   stock          Int?
   stockminimo    Int?
   idProveedor    Int?
   estado         Boolean?
+  descripcion    String?          @db.VarChar(255)
   proveedores    proveedores?     @relation(fields: [idProveedor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "productos_idproducto_fkey")
   detallefactura detallefactura[]
   detallenp      detallenp[]
