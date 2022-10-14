@@ -3,14 +3,16 @@ import { Router } from "express";
 import {
   getClientes,
   createCliente,
-  deleteCliente
+  deleteCliente,
+  updateCliente,
+  getCliente
 } from "./cliente.controller";
 const router = Router();
 
 router.get("/", getClientes);
-// router.get("/:id", getUsuario);
+router.get("/:id", getCliente);
 router.post("/", createCliente);
-// router.put("/:id", [verifyToken, isAdmin], updateUsuario);
+router.put("/:id", updateCliente);
 router.delete("/:id",  deleteCliente);
 
 export default router;
