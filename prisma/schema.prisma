@@ -10,7 +10,7 @@ datasource db {
 model clientes {
   id              Int             @id @default(autoincrement())
   nombre          String?         @db.VarChar(100)
-  tipoiva         String?         @db.Char(1)
+  tipoiva         Int?
   idtipodocumento Int?
   documento       Int?
   direccion       String?         @db.VarChar(255)
@@ -19,6 +19,7 @@ model clientes {
   email           String?         @db.VarChar(30)
   estado          Boolean?
   tipodocumentos  tipodocumentos? @relation(fields: [idtipodocumento], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tiposiva        tiposiva?       @relation(fields: [tipoiva], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_clientes_tipoiva")
   facturas        facturas[]
 }
 
@@ -81,12 +82,13 @@ model notasdepedido {
 
 model productos {
   id             Int              @id @default(autoincrement())
-  nombre         String?          @db.VarChar(255)
+  nombre         String?          @db.VarChar(50)
   precio         Decimal?         @db.Decimal(13, 2)
   stock          Int?
   stockminimo    Int?
   idProveedor    Int?
   estado         Boolean?
+  descripcion    String?          @db.VarChar(255)
   proveedores    proveedores?     @relation(fields: [idProveedor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "productos_idproducto_fkey")
   detallefactura detallefactura[]
   detallenp      detallenp[]
@@ -95,7 +97,7 @@ model productos {
 model proveedores {
   id              Int             @id @default(autoincrement())
   nombre          String?         @db.VarChar(100)
-  tipoiva         String?         @db.Char(1)
+  tipoiva         Int?
   idtipodocumento Int?
   documento       Int?
   direccion       String?         @db.VarChar(255)
@@ -103,6 +105,7 @@ model proveedores {
   telefono        String?         @db.VarChar(30)
   email           String?         @db.VarChar(30)
   estado          Boolean?
+  tiposiva        tiposiva?       @relation(fields: [tipoiva], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_proveedores_tipoiva")
   tipodocumentos  tipodocumentos? @relation(fields: [idtipodocumento], references: [id], onDelete: NoAction, onUpdate: NoAction)
   notasdepedido   notasdepedido[]
   productos       productos[]
@@ -162,4 +165,12 @@ model tiposventa {
   id       Int        @id @default(autoincrement())
   tipo     String?    @db.VarChar(50)
   facturas facturas[]
+}
+
+model tiposiva {
+  id          Int           @id @default(autoincrement())
+  tipo        String?       @db.Char(1)
+  descripcion String?       @db.VarChar(50)
+  clientes    clientes[]
+  proveedores proveedores[]
 }
