@@ -41,7 +41,7 @@ CREATE TABLE Clientes (
 CREATE TABLE Proveedores (
 	ID serial PRIMARY KEY NOT NULL
 	,Nombre VARCHAR(100)
-	,TipoIVA CHAR(1)
+	,TipoIVA INT REFERENCES TiposIVA(id)
 	,IdTipoDocumento INT REFERENCES TipoDocumentos(ID)
 	,Documento INT
 	,Direccion VARCHAR(255)
