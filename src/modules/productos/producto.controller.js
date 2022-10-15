@@ -63,7 +63,7 @@ const createProducto = async (req, res) => {
 
 const updateProducto = async (req, res) => {
   const { id } = req.params;
-  const { nombre, descripcion, precio, stock, stockminimo, idProveedor } = req.body;
+  const { nombre, descripcion, precio, stockminimo, idProveedor } = req.body;
   try {
     const productoFound = await prisma.productos.findUnique({
       where: {
@@ -83,7 +83,6 @@ const updateProducto = async (req, res) => {
         nombre,
         descripcion,
         precio: parseFloat(precio),
-        stock: parseInt(stock),
         stockminimo: parseInt(stockminimo),
         estado: true,
         proveedores: {
@@ -96,6 +95,34 @@ const updateProducto = async (req, res) => {
     res.status(200).json({ mensaje: 'Producto actualizado correctamente', status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al actualizar producto', status: 400 });
+  }
+}
+
+const updateStock = async (req, res) => {
+  const { id } = req.params;
+  const { stock } = req.body;
+  try {
+    const productoFound = await prisma.productos.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    if (!productoFound) {
+      return res.status(400).json({ mensaje: 'El producto no existe', status: 400 });
+    }
+
+    const data = await prisma.productos.update({
+      where: {
+        id: parseInt(id),
+      },
+      data: {
+        stock: parseInt(stock),
+      },
+    });
+    res.status(200).json({ mensaje: 'Stock actualizado correctamente', status: 200 });
+  } catch (error) {
+    res.status(400).json({ mensaje: 'Error al actualizar stock', status: 400 });
   }
 }
 
@@ -121,5 +148,6 @@ export {
   getProducto,
   createProducto,
   updateProducto,
+  updateStock,
   deleteProducto
 }
