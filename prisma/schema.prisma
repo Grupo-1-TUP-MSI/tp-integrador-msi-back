@@ -16,7 +16,7 @@ model clientes {
   direccion       String?         @db.VarChar(255)
   cp              String?         @db.VarChar(20)
   telefono        String?         @db.VarChar(30)
-  email           String?         @db.VarChar(30)
+  email           String?         @db.VarChar(255)
   estado          Boolean?
   tipodocumentos  tipodocumentos? @relation(fields: [idtipodocumento], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tiposiva        tiposiva?       @relation(fields: [tipoiva], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_clientes_tipoiva")
@@ -103,7 +103,7 @@ model proveedores {
   direccion       String?         @db.VarChar(255)
   cp              String?         @db.VarChar(20)
   telefono        String?         @db.VarChar(30)
-  email           String?         @db.VarChar(30)
+  email           String?         @db.VarChar(255)
   estado          Boolean?
   tiposiva        tiposiva?       @relation(fields: [tipoiva], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_proveedores_tipoiva")
   tipodocumentos  tipodocumentos? @relation(fields: [idtipodocumento], references: [id], onDelete: NoAction, onUpdate: NoAction)
