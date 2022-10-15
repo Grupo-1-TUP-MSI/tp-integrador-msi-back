@@ -30,7 +30,7 @@ CREATE TABLE Clientes (
 	,Nombre VARCHAR(100)
 	,TipoIVA INT REFERENCES TiposIVA(id)
 	,IdTipoDocumento INT REFERENCES TipoDocumentos(ID)
-	,Documento INT
+	,Documento VARCHAR(20)
 	,Direccion VARCHAR(255)
 	,CP VARCHAR(20)
 	,Telefono VARCHAR(30)
@@ -43,7 +43,7 @@ CREATE TABLE Proveedores (
 	,Nombre VARCHAR(100)
 	,TipoIVA INT REFERENCES TiposIVA(id)
 	,IdTipoDocumento INT REFERENCES TipoDocumentos(ID)
-	,Documento INT
+	,Documento VARCHAR(20)
 	,Direccion VARCHAR(255)
 	,CP VARCHAR(20)
 	,Telefono VARCHAR(30)

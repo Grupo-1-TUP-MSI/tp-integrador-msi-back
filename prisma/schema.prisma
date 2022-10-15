@@ -12,7 +12,7 @@ model clientes {
   nombre          String?         @db.VarChar(100)
   tipoiva         Int?
   idtipodocumento Int?
-  documento       Int?
+  documento       String?         @db.VarChar(20)
   direccion       String?         @db.VarChar(255)
   cp              String?         @db.VarChar(20)
   telefono        String?         @db.VarChar(30)
@@ -99,7 +99,7 @@ model proveedores {
   nombre          String?         @db.VarChar(100)
   tipoiva         Int?
   idtipodocumento Int?
-  documento       Int?
+  documento       String?         @db.VarChar(20)
   direccion       String?         @db.VarChar(255)
   cp              String?         @db.VarChar(20)
   telefono        String?         @db.VarChar(30)
