@@ -1,28 +1,48 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-
 const getProveedores = async (req, res) => {
   try {
     const data = await prisma.proveedores.findMany({
       // where: {
       //   estado: true,
       // },
-      
     });
 
-    const proveedores = []
-    data.forEach(proveedor => {
-      
-      const { id, nombre, tipoiva, idtipodocumento, documento, direccion, cp, telefono, email, estado } = proveedor;
-      proveedores.push({ id, nombre, tipoiva, idtipodocumento, documento, direccion, cp, telefono, email, estado });
+    const proveedores = [];
+    data.forEach((proveedor) => {
+      const {
+        id,
+        nombre,
+        tipoiva,
+        idtipodocumento,
+        documento,
+        direccion,
+        cp,
+        telefono,
+        email,
+        estado,
+      } = proveedor;
+      proveedores.push({
+        id,
+        nombre,
+        tipoiva,
+        idtipodocumento,
+        documento,
+        direccion,
+        cp,
+        telefono,
+        email,
+        estado,
+      });
     });
     res.status(200).json({ data: proveedores, status: 200 });
   } catch (error) {
-    res.status(400).json({ mensaje: "Error al obtener proveedores", status: 400 });
+    res
+      .status(400)
+      .json({ mensaje: "Error al obtener proveedores", status: 400 });
   }
 };
-
 
 const getProveedor = async (req, res) => {
   try {
@@ -31,27 +51,74 @@ const getProveedor = async (req, res) => {
       where: {
         id: parseInt(id),
       },
-     
     });
-    const {nombre, tipoiva, idtipodocumento, documento, direccion, cp, telefono, email, estado } = data;
-    res.status(200).json({ data: { id, nombre, tipoiva, idtipodocumento, documento, direccion, cp, telefono, email, estado  }, status: 200 });
+    const {
+      nombre,
+      tipoiva,
+      idtipodocumento,
+      documento,
+      direccion,
+      cp,
+      telefono,
+      email,
+      estado,
+    } = data;
+    res
+      .status(200)
+      .json({
+        data: {
+          id,
+          nombre,
+          tipoiva,
+          idtipodocumento,
+          documento,
+          direccion,
+          cp,
+          telefono,
+          email,
+          estado,
+        },
+        status: 200,
+      });
   } catch (error) {
-    res.status(400).json({ mensaje: "Error al obtener proveedor", status: 400 });
+    res
+      .status(400)
+      .json({ mensaje: "Error al obtener proveedor", status: 400 });
   }
-}
+};
 
 const createProveedor = async (req, res) => {
-  const { nombre, tipoiva, idtipodocumento, documento, direccion, cp, telefono, email} = req.body;
-  if(nombre==""|| tipoiva==0|| idtipodocumento==0|| documento==0 || direccion=="" || cp=="" || email==""){
-    return res.json({ mensaje: 'Es necesario ingresar todos los campos requeridos', status: 400 });
+  const {
+    nombre,
+    tipoiva,
+    idtipodocumento,
+    documento,
+    direccion,
+    cp,
+    telefono,
+    email,
+  } = req.body;
+  if (
+    nombre == "" ||
+    tipoiva == 0 ||
+    idtipodocumento == 0 ||
+    documento == 0 ||
+    direccion == "" ||
+    cp == "" ||
+    email == ""
+  ) {
+    return res
+      .status(400)
+      .json({
+        mensaje: "Es necesario ingresar todos los campos requeridos",
+        status: 400,
+      });
   }
-  
+
   try {
- 
     const data = await prisma.proveedores.create({
       data: {
-        
-        nombre,    
+        nombre,
         documento,
         direccion,
         cp,
@@ -70,20 +137,29 @@ const createProveedor = async (req, res) => {
         },
       },
     });
-    res.json({ mensaje: 'Proveedor registrado correctamente', status: 200 });
+    res
+      .status(200)
+      .json({ mensaje: "Proveedor registrado correctamente", status: 200 });
   } catch (error) {
-    res.json({ mensaje: 'Error al crear el proveedor', status: 400 });
+    res
+      .status(400)
+      .json({ mensaje: "Error al crear el proveedor", status: 400 });
   }
 };
 
 const updateProveedor = async (req, res) => {
   const { id } = req.params;
-  const { nombre, direccion, cp, telefono, email, estado} = req.body;
-  
-  if(nombre==""|| direccion=="" || cp=="" || email==""){
-    return res.json({ mensaje: 'Es necesario ingresar todos los campos requeridos', status: 400 });
+  const { nombre, direccion, cp, telefono, email, estado } = req.body;
+
+  if (nombre == "" || direccion == "" || cp == "" || email == "") {
+    return res
+      .status(400)
+      .json({
+        mensaje: "Es necesario ingresar todos los campos requeridos",
+        status: 400,
+      });
   }
-  
+
   try {
     const data = await prisma.proveedores.update({
       where: {
@@ -93,14 +169,18 @@ const updateProveedor = async (req, res) => {
         nombre,
         direccion,
         cp,
-        telefono, 
+        telefono,
         email,
-        estado: true
+        estado: true,
       },
     });
-    res.json({ mensaje: 'Proveedor actualizado correctamente', status: 200 });
+    res
+      .status(200)
+      .json({ mensaje: "Proveedor actualizado correctamente", status: 200 });
   } catch (error) {
-    res.json({ mensaje: 'Error al actualizar el proveedor', status: 400 });
+    res
+      .status(400)
+      .json({ mensaje: "Error al actualizar el proveedor", status: 400 });
   }
 };
 
@@ -116,13 +196,15 @@ const deleteProveedor = async (req, res) => {
         estado: false,
       },
     });
-    res.json({ mensaje: 'Proveedor eliminado correctamente', status: 200 });
+    res
+      .status(200)
+      .json({ mensaje: "Proveedor eliminado correctamente", status: 200 });
   } catch (error) {
-    res.json({ mensaje: 'Error al eliminar proveedor', status: 400 });
+    res
+      .status(400)
+      .json({ mensaje: "Error al eliminar proveedor", status: 400 });
   }
 };
-
-
 
 export {
   getProveedores,
@@ -130,5 +212,4 @@ export {
   createProveedor,
   updateProveedor,
   deleteProveedor,
-  
-}
+};
