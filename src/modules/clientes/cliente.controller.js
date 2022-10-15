@@ -63,16 +63,18 @@ const createCliente = async (req, res) => {
     const data = await prisma.clientes.create({
       data: {
         nombre,
-        tiposiva: {
-          connect: {
-            id: parseInt(tipoiva),
-          },
-        },
-        tipodocumentos: {
-          connect: {
-            id: parseInt(idtipodocumento),
-          },
-        },
+        // tiposiva: {
+        //   connect: {
+        //     id: parseInt(tipoiva),
+        //   },
+        // },
+        tipoiva,
+        // tipodocumentos: {
+        //   connect: {
+        //     id: parseInt(idtipodocumento),
+        //   },
+        // },
+        idtipodocumento,
         documento,
         direccion,
         cp,
@@ -85,6 +87,7 @@ const createCliente = async (req, res) => {
       .status(200)
       .json({ mensaje: "Cliente registrado correctamente", status: 200 });
   } catch (error) {
+    console.log(error)
     res.status(400).json({ mensaje: "Error al crear cliente", status: 400 });
   }
 };
