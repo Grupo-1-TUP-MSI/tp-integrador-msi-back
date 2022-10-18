@@ -9,7 +9,8 @@ CREATE TABLE Roles (
 CREATE TABLE Usuarios (
 	ID SERIAL PRIMARY KEY NOT NULL
 	,Usuario VARCHAR(50)
-	,Contraseña VARCHAR(50)
+	,Password VARCHAR(50)
+	,NombreCompleto VARCHAR(100)	
 	,IdRol INT REFERENCES Roles(ID)
 	,Estado bool
 	);
@@ -20,9 +21,9 @@ CREATE TABLE TipoDocumentos (
 	);
 
 CREATE TABLE TiposIVA (
-	id serial PRIMARY KEY NOT NULL
-	,tipo bpchar(1)
-	,descripcion VARCHAR(50)
+	ID serial PRIMARY KEY NOT NULL
+	,Tipo bpchar(1)
+	,Descripcion VARCHAR(50)
 	)
 
 CREATE TABLE Clientes (
@@ -34,7 +35,7 @@ CREATE TABLE Clientes (
 	,Direccion VARCHAR(255)
 	,CP VARCHAR(20)
 	,Telefono VARCHAR(30)
-	,Email VARCHAR(30)
+	,Email VARCHAR(255)
 	,Estado bool
 	);
 
@@ -47,24 +48,28 @@ CREATE TABLE Proveedores (
 	,Direccion VARCHAR(255)
 	,CP VARCHAR(20)
 	,Telefono VARCHAR(30)
-	,Email VARCHAR(30)
+	,Email VARCHAR(255)
 	,Estado bool
 	);
 
 CREATE TABLE Productos (
 	ID serial PRIMARY KEY NOT NULL
 	,Nombre VARCHAR(255)
-	,Precio DECIMAL(13, 2)
-	,Stock INT
-	,StockMinimo INT
-	,idProveedor INT REFERENCES Proveedores(ID)
-	,Estado bool
-	)
-
-CREATE TABLE PuntoVentas (
-	ID serial PRIMARY KEY NOT NULL
-	,Punto VARCHAR(50)
+	,Descripcion VARCHAR(255)
+	,PrecioLista DECIMAL(13, 2)
+	,Stock INT default 0
+	,StockMinimo INT	
 	);
+
+CREATE TABLE ProductosXProveedores (
+	ID serial PRIMARY KEY NOT NULL
+	,IdProveedor INT references Proveedores(ID)
+	,IdProducto  INT references Productos(ID)	
+	,Precio DECIMAL(13, 2)
+	,Estado bool	
+	);
+	
+
 
 CREATE TABLE TiposVenta (
 	ID serial PRIMARY KEY NOT NULL
@@ -110,7 +115,7 @@ CREATE TABLE TiposCompra (
 CREATE TABLE NotasDePedido (
 	ID serial PRIMARY KEY NOT NULL
 	,Fecha TIMESTAMP
-	,Numero INT
+	,Version INT
 	,Vencimiento TIMESTAMP
 	,IdUsuario INT REFERENCES Usuarios(ID)
 	,IdProveedor INT REFERENCES Proveedores(ID)
@@ -120,7 +125,7 @@ CREATE TABLE NotasDePedido (
 
 CREATE TABLE DetalleNP (
 	ID serial PRIMARY KEY NOT NULL
-	,IdProducto INT REFERENCES Productos(ID)
+	,IdProductoProveedor INT REFERENCES ProductosXProveedores(ID)
 	,IdNP INT REFERENCES NotasDePedido(ID)
 	,CantidadPedida INT
 	,CantidadRecibida INT
@@ -161,24 +166,28 @@ VALUES ('PEND_ACEPTACION')
 INSERT INTO Usuarios (
 	Usuario
 	,Password
+	,NombreCompleto
 	,IdRol
 	,Estado
 	)
 VALUES (
 	'admin@colorcol.com.ar'
 	,'admin'
+	,'Juan Panadero'
 	,1
 	,true
 	)
 	,(
 	'compras@colorcol.com.ar'
 	,'compras'
+	,'Fabiana Cantilo'
 	,2
 	,true
 	)
 	,(
 	'ventas@colorcol.com.ar'
 	,'ventas'
+	,'Stephen Curry'
 	,3
 	,true
 	);
@@ -200,7 +209,7 @@ VALUES (
 	,(
 	'C'
 	,'Consumidor Final'
-	)
+	);
 
 INSERT INTO clientes (
 	nombre
