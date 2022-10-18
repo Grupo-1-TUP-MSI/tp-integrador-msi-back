@@ -19,7 +19,7 @@ model clientes {
   email           String?         @db.VarChar(255)
   estado          Boolean?
   tipodocumentos  tipodocumentos? @relation(fields: [idtipodocumento], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tiposiva        tiposiva?       @relation(fields: [tipoiva], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_clientes_tipoiva")
+  tiposiva        tiposiva?       @relation(fields: [tipoiva], references: [id], onDelete: NoAction, onUpdate: NoAction)
   facturas        facturas[]
 }
 
@@ -35,16 +35,16 @@ model detallefactura {
 }
 
 model detallenp {
-  id               Int            @id @default(autoincrement())
-  idproducto       Int?
-  idnp             Int?
-  cantidadpedida   Int?
-  cantidadrecibida Int?
-  precio           Decimal?       @db.Decimal(13, 2)
-  descuento        Int?
-  estado           Boolean?
-  notasdepedido    notasdepedido? @relation(fields: [idnp], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  productos        productos?     @relation(fields: [idproducto], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                    Int                    @id @default(autoincrement())
+  idproductoproveedor   Int?
+  idnp                  Int?
+  cantidadpedida        Int?
+  cantidadrecibida      Int?
+  precio                Decimal?               @db.Decimal(13, 2)
+  descuento             Int?
+  estado                Boolean?
+  notasdepedido         notasdepedido?         @relation(fields: [idnp], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  productosxproveedores productosxproveedores? @relation(fields: [idproductoproveedor], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model facturas {
@@ -67,7 +67,7 @@ model facturas {
 model notasdepedido {
   id           Int          @id @default(autoincrement())
   fecha        DateTime?    @db.Timestamp(6)
-  numero       Int?
+  version      Int?
   vencimiento  DateTime?    @db.Timestamp(6)
   idusuario    Int?
   idproveedor  Int?
@@ -81,34 +81,31 @@ model notasdepedido {
 }
 
 model productos {
-  id             Int              @id @default(autoincrement())
-  nombre         String?          @db.VarChar(50)
-  precio         Decimal?         @db.Decimal(13, 2)
-  stock          Int?             @default(0)
-  stockminimo    Int?
-  idProveedor    Int?
-  estado         Boolean?
-  descripcion    String?          @db.VarChar(255)
-  proveedores    proveedores?     @relation(fields: [idProveedor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "productos_idproducto_fkey")
-  detallefactura detallefactura[]
-  detallenp      detallenp[]
+  id                    Int                     @id @default(autoincrement())
+  nombre                String?                 @db.VarChar(255)
+  descripcion           String?                 @db.VarChar(255)
+  preciolista           Decimal?                @db.Decimal(13, 2)
+  stock                 Int?                    @default(0)
+  stockminimo           Int?
+  detallefactura        detallefactura[]
+  productosxproveedores productosxproveedores[]
 }
 
 model proveedores {
-  id              Int             @id @default(autoincrement())
-  nombre          String?         @db.VarChar(100)
-  tipoiva         Int?
-  idtipodocumento Int?
-  documento       String?         @db.VarChar(20)
-  direccion       String?         @db.VarChar(255)
-  cp              String?         @db.VarChar(20)
-  telefono        String?         @db.VarChar(30)
-  email           String?         @db.VarChar(255)
-  estado          Boolean?
-  tiposiva        tiposiva?       @relation(fields: [tipoiva], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_proveedores_tipoiva")
-  tipodocumentos  tipodocumentos? @relation(fields: [idtipodocumento], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  notasdepedido   notasdepedido[]
-  productos       productos[]
+  id                    Int                     @id @default(autoincrement())
+  nombre                String?                 @db.VarChar(100)
+  tipoiva               Int?
+  idtipodocumento       Int?
+  documento             String?                 @db.VarChar(20)
+  direccion             String?                 @db.VarChar(255)
+  cp                    String?                 @db.VarChar(20)
+  telefono              String?                 @db.VarChar(30)
+  email                 String?                 @db.VarChar(255)
+  estado                Boolean?
+  tipodocumentos        tipodocumentos?         @relation(fields: [idtipodocumento], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tiposiva              tiposiva?               @relation(fields: [tipoiva], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  notasdepedido         notasdepedido[]
+  productosxproveedores productosxproveedores[]
 }
 
 model prueba {
@@ -133,14 +130,15 @@ model tipodocumentos {
 }
 
 model usuarios {
-  id            Int             @id @default(autoincrement())
-  usuario       String?         @db.VarChar(50)
-  password      String?         @db.VarChar(150)
-  idrol         Int?
-  estado        Boolean?
-  roles         roles?          @relation(fields: [idrol], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  facturas      facturas[]
-  notasdepedido notasdepedido[]
+  id             Int             @id @default(autoincrement())
+  usuario        String?         @db.VarChar(50)
+  password       String?         @db.VarChar(50)
+  nombrecompleto String?         @db.VarChar(100)
+  idrol          Int?
+  estado         Boolean?
+  roles          roles?          @relation(fields: [idrol], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  facturas       facturas[]
+  notasdepedido  notasdepedido[]
 }
 
 model estadonp {
@@ -173,4 +171,15 @@ model tiposiva {
   descripcion String?       @db.VarChar(50)
   clientes    clientes[]
   proveedores proveedores[]
+}
+
+model productosxproveedores {
+  id          Int          @id @default(autoincrement())
+  idproveedor Int?
+  idproducto  Int?
+  precio      Decimal?     @db.Decimal(13, 2)
+  estado      Boolean?
+  productos   productos?   @relation(fields: [idproducto], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proveedores proveedores? @relation(fields: [idproveedor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  detallenp   detallenp[]
 }
