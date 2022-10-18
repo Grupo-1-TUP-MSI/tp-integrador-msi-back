@@ -19,7 +19,7 @@ const matchPassword = async (password, savedPassword) => {
 
 const signUp = async (req, res) => {
   // comprobar que el usuario no existe
-  const { usuario, password, idRol } = req.body;
+  const { usuario, nombrecompleto, password, idRol } = req.body;
   try {
 
     // const user = await prisma.usuarios.findUnique({
@@ -40,6 +40,7 @@ const signUp = async (req, res) => {
       const data = await prisma.usuarios.create({
         data: {
           usuario,
+          nombrecompleto,
           password: await encryptPassword(password),
           estado: true,
           roles: {

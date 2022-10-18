@@ -175,7 +175,7 @@ model tiposventa {
 model usuarios {
   id             Int             @id @default(autoincrement())
   usuario        String?         @db.VarChar(50)
-  password       String?         @db.VarChar(50)
+  password       String?         @db.VarChar(255)
   nombrecompleto String?         @db.VarChar(100)
   idrol          Int?
   estado         Boolean?
