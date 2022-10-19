@@ -42,14 +42,22 @@ const getProductosProveedor = async (req, res) => {
         }
       },
       include: {
-        productos: true,
-      },
+        productos: {
+          select: {
+            id: true,
+            nombre: true,
+            estado: true
+          }
+        }
+      }
     });
 
     const productos = []
     data.forEach(p => {
       const { idproducto, precio } = p;
-      productos.push({ idproducto, precio, productoNombre: p.productos.nombre });
+      if(p.productos.estado){
+        productos.push({ idproducto, precio, productoNombre: p.productos.nombre });
+      }
     });
     res.status(200).json({ data: productos, status: 200 });
   } catch (error) {
