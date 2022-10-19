@@ -71,19 +71,20 @@ model facturas {
 }
 
 model notasdepedido {
-  id           Int          @id @default(autoincrement())
-  fecha        DateTime?    @db.Timestamp(6)
-  version      Int?
-  vencimiento  DateTime?    @db.Timestamp(6)
-  idusuario    Int?
-  idproveedor  Int?
-  idestadonp   Int?
-  idtipocompra Int?
-  estadonp     estadonp?    @relation(fields: [idestadonp], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  proveedores  proveedores? @relation(fields: [idproveedor], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tiposcompra  tiposcompra? @relation(fields: [idtipocompra], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  usuarios     usuarios?    @relation(fields: [idusuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  detallenp    detallenp[]
+  id               Int          @id @default(autoincrement())
+  fecha            DateTime?    @db.Timestamp(6)
+  version          Int?
+  vencimiento      DateTime?    @db.Timestamp(6)
+  idusuario        Int?
+  idproveedor      Int?
+  idestadonp       Int?
+  idtipocompra     Int?
+  fechaelaboracion DateTime?    @db.Timestamp(6)
+  estadonp         estadonp?    @relation(fields: [idestadonp], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proveedores      proveedores? @relation(fields: [idproveedor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tiposcompra      tiposcompra? @relation(fields: [idtipocompra], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuarios         usuarios?    @relation(fields: [idusuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  detallenp        detallenp[]
 }
 
 model productos {

@@ -10,6 +10,7 @@ import clienteRoutes from "./modules/clientes/cliente.routes";
 import authRoutes from "./modules/auth/auth.routes";
 import productoRoutes from "./modules/productos/producto.routes";
 import productoproveedorRoutes from "./modules/productos/productoproveedor.routes";
+import notasdepedidoRoutes from "./modules/notasdepedido/notasdepedido.routes";
 
 
 
@@ -32,5 +33,6 @@ app.use("/auth", authRoutes);
 app.use("/productos", productoRoutes);
 app.use("/proveedores", proveedorRoutes);
 app.use("/productosproveedores",productoproveedorRoutes);
+app.use("/nps", notasdepedidoRoutes);
 
 export default app;
