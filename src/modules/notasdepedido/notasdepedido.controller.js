@@ -21,7 +21,7 @@ const getNPS = async (req, res) => {
 
     const nps = []
 
-     data.forEach(np=>{
+     data.forEach(np =>{
             const detalles = []
             np.detallenp.forEach(det=>{
                 const {id, nombre, cantidadpedida, cantidadrecibida, precio}  = det;
