@@ -81,6 +81,47 @@ const updateProducto = async (req, res) => {
   }
 }
 
+const productoProveedor = async (req, res) => {
+  //const { id } = req.params;
+  const { idproducto, idproveedor, precio } = req.body;
+
+  try {
+    
+    const dataFound = await prisma.productosxproveedores.findFirst({
+      where: {
+        idproducto: parseInt(idproducto),
+        idproveedor: parseInt(idproveedor),
+      },
+    });
+
+    if (dataFound) {
+      const data = await prisma.productosxproveedores.updateMany({
+        where: {
+          idproducto: parseInt(idproducto),
+          idproveedor: parseInt(idproveedor),
+        },
+        data: {
+          precio: parseFloat(precio),
+        },
+      });
+      return res.status(200).json({ mensaje: 'Precio actualizado correctamente', status: 200 });
+    } 
+
+    const data = await prisma.productosxproveedores.create({
+      data: {
+        idproducto: parseInt(idproducto),
+        idproveedor: parseInt(idproveedor),
+        precio: parseFloat(precio),
+      },
+    });
+    return res.status(200).json({ mensaje: 'Precio creado correctamente', status: 200 });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ mensaje: 'Error al actualizar producto', status: 400 });
+  }
+}
+
 const updateStock = async (req, res) => {
   const { id } = req.params;
   const { stock } = req.body;
@@ -132,5 +173,6 @@ export {
   createProducto,
   updateProducto,
   updateStock,
+  productoProveedor,
   deleteProducto
 }
