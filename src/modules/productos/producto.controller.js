@@ -75,9 +75,9 @@ const updateProducto = async (req, res) => {
         estado: true
       },
     });
-    res.status(200).json({ mensaje: 'Producto actualizado correctamenteeee', status: 200 });
+    res.status(200).json({ mensaje: 'Producto actualizado correctamente', status: 200 });
   } catch (error) {
-    res.status(400).json({ mensaje: 'Error al actualizar productoooo', status: 400 });
+    res.status(400).json({ mensaje: 'Error al actualizar producto', status: 400 });
   }
 }
 
