@@ -75,49 +75,50 @@ const updateProducto = async (req, res) => {
         estado: true
       },
     });
-    res.status(200).json({ mensaje: 'Producto actualizado correctamente', status: 200 });
+    res.status(200).json({ mensaje: 'Producto actualizado correctamenteeee', status: 200 });
   } catch (error) {
-    res.status(400).json({ mensaje: 'Error al actualizar producto', status: 400 });
+    res.status(400).json({ mensaje: 'Error al actualizar productoooo', status: 400 });
   }
 }
 
 const productoProveedor = async (req, res) => {
-  const { id } = req.params;
-  const { idProducto, idProveedor, precio } = req.body;
+  //const { id } = req.params;
+  const { idproducto, idproveedor, precio } = req.body;
 
   try {
     
     const dataFound = await prisma.productosxproveedores.findFirst({
       where: {
-        idproducto: parseInt(idProducto),
-        idproveedor: parseInt(idProveedor),
+        idproducto: parseInt(idproducto),
+        idproveedor: parseInt(idproveedor),
       },
     });
 
     if (dataFound) {
-      const data = await prisma.productosxproveedores.update({
+      const data = await prisma.productosxproveedores.updateMany({
         where: {
-          idproducto: parseInt(idProducto),
-          idproveedor: parseInt(idProveedor),
+          idproducto: parseInt(idproducto),
+          idproveedor: parseInt(idproveedor),
         },
         data: {
           precio: parseFloat(precio),
         },
       });
-      res.status(200).json({ mensaje: 'Precio actualizado correctamente', status: 200 });
+      return res.status(200).json({ mensaje: 'Precio actualizado correctamente', status: 200 });
     } 
 
     const data = await prisma.productosxproveedores.create({
       data: {
-        idproducto: parseInt(idProducto),
-        idproveedor: parseInt(idProveedor),
+        idproducto: parseInt(idproducto),
+        idproveedor: parseInt(idproveedor),
         precio: parseFloat(precio),
       },
     });
-    res.status(200).json({ mensaje: 'Precio creado correctamente', status: 200 });
+    return res.status(200).json({ mensaje: 'Precio creado correctamente', status: 200 });
 
   } catch (error) {
-    res.status(400).json({ mensaje: 'Error al actualizar producto', status: 400 });
+    console.log(error);
+    return res.status(400).json({ mensaje: 'Error al actualizar producto', status: 400 });
   }
 }
 

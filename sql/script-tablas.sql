@@ -179,7 +179,7 @@ VALUES (
 	)
 	,(
 	'compras@colorcol.com.ar'
-	,'compras'
+	,'compras'dd
 	,'Fabiana Cantilo'
 	,2
 	,true

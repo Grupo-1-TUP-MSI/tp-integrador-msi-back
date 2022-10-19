@@ -9,6 +9,7 @@ import proveedorRoutes from "./modules/proveedores/proveedor.routes";
 import clienteRoutes from "./modules/clientes/cliente.routes";
 import authRoutes from "./modules/auth/auth.routes";
 import productoRoutes from "./modules/productos/producto.routes";
+import productoproveedorRoutes from "./modules/productos/productoproveedor.routes";
 
 
 
@@ -30,5 +31,6 @@ app.use("/clientes", clienteRoutes);
 app.use("/auth", authRoutes);
 app.use("/productos", productoRoutes);
 app.use("/proveedores", proveedorRoutes);
+app.use("/productosproveedores",productoproveedorRoutes);
 
 export default app;
