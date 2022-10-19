@@ -2,13 +2,13 @@ import { Router } from "express";
 
 import {
 
-  productoProveedor,
+  updateProductoProveedor,
   
 } from "./producto.controller";
 const router = Router();
 
 
-router.put("/", productoProveedor);
+router.put("/", updateProductoProveedor);
 
 
 export default router;

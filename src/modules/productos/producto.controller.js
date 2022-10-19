@@ -31,6 +31,41 @@ const getProducto = async (req, res) => {
   }
 }
 
+const getProductosProveedor = async (req, res) => {
+  try {
+    const { id } = req.params; // id del proveedor
+    const data = await prisma.productosxproveedores.findMany({
+      where: {
+        idproveedor: parseInt(id),
+        precio: {
+          gt: 0
+        }
+      },
+      include: {
+        productos: {
+          select: {
+            id: true,
+            nombre: true,
+            estado: true
+          }
+        }
+      }
+    });
+
+    const productos = []
+    data.forEach(p => {
+      const { idproducto, precio } = p;
+      if(p.productos.estado){
+        productos.push({ idproducto, precio, productoNombre: p.productos.nombre });
+      }
+    });
+    res.status(200).json({ data: productos, status: 200 });
+  } catch (error) {
+    res.status(400).json({ mensaje: "Error al obtener productos", status: 400 });
+  }
+    
+}
+
 const createProducto = async (req, res) => {
   const { nombre, descripcion, preciolista, stockminimo } = req.body;
   try {
@@ -81,7 +116,7 @@ const updateProducto = async (req, res) => {
   }
 }
 
-const productoProveedor = async (req, res) => {
+const updateProductoProveedor = async (req, res) => {
   //const { id } = req.params;
   const { idproducto, idproveedor, precio } = req.body;
 
@@ -170,9 +205,10 @@ const deleteProducto = async (req, res) => {
 export {
   getProductos,
   getProducto,
+  getProductosProveedor,
   createProducto,
   updateProducto,
   updateStock,
-  productoProveedor,
+  updateProductoProveedor,
   deleteProducto
 }
