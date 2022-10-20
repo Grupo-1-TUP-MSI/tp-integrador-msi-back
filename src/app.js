@@ -33,6 +33,6 @@ app.use("/auth", authRoutes);
 app.use("/productos", productoRoutes);
 app.use("/proveedores", proveedorRoutes);
 app.use("/productosproveedores",productoproveedorRoutes);
-app.use("/nps", notasdepedidoRoutes);
+app.use("/np", notasdepedidoRoutes);
 
 export default app;

@@ -48,6 +48,7 @@ const getProductosProveedor = async (req, res) => {
             nombre: true,
             estado: true
           }
+          // solucionar where estado true
         }
       }
     });
