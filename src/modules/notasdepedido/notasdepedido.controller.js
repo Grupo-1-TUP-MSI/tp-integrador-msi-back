@@ -198,8 +198,7 @@ const createNP = async (req, res) => {
               cantidadpedida: parseInt(dnp.cantidadpedida),
               precio: parseFloat(dnp.precio),
               idproductoproveedor: 1
-            }),
-            skipDuplicates: true,
+            })
           }
         },
       }
