@@ -175,7 +175,7 @@ const createNP = async (req, res) => {
   try {
     const obtenerProductoProveedor = await prisma.productosxproveedores.findFirst({
       where: {
-        idproducto: 1,
+        idproducto: 1, // viene en el detalle del body
         idproveedor: parseInt(idProveedor),
       },
       select: {
