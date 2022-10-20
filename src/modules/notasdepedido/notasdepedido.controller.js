@@ -197,37 +197,12 @@ const createNP = async (req, res) => {
             data: detalles.map((dnp) => dnp = {
               cantidadpedida: parseInt(dnp.cantidadpedida),
               precio: parseFloat(dnp.precio),
-              idproductoproveedor: {}
+              idproductoproveedor: 1
             }),
             skipDuplicates: true,
           }
         },
-      },
-      include: {
-        proveedores: {
-          select: {
-            id: true,
-          },
-        },
-        usuarios: {
-          select: {
-            id: true,
-          },
-        },
-        detallenp: {
-          include: {
-            productosxproveedores: {
-              include: {
-                productos: {
-                  select: {
-                    id: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      }
     });
     res.status(200).json({ data, status: 200 });
   } catch (error) {
