@@ -198,7 +198,7 @@ const createNP = async (req, res) => {
             data: detalles.map(async (dnp) => dnp = {
               cantidadpedida: parseInt(dnp.cantidadpedida),
               precio: parseFloat(dnp.precio),
-              idproductoproveedor: await obtenerProductoProveedor(dnp.idproducto),
+              idproductoproveedor: 1,
             })
           }
         },
