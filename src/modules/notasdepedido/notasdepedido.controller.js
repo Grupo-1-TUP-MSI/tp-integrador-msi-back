@@ -161,7 +161,83 @@ const getNPbyId = async (req, res) => {
   }
 }
 
+const createNP = async (req, res) => {
+  console.log(req.body);
+  const { plazoentrega, idUsuario, idProveedor, idTipoCompra, detalles } = req.body;
+  // const fecha = new Date().toISOString().split("T")[0];
+  // fecha en formato datetime
+  const fecha = new Date().toISOString();
+  const vencimiento = new Date(
+    new Date().setDate(new Date().getDate() + plazoentrega)
+  ).toISOString();
+  console.log(`Fecha: ${fecha} - Vencimiento: ${vencimiento}`);
+
+  try {
+    const obtenerProductoProveedor = await prisma.productosxproveedores.findFirst({
+      where: {
+        idproducto: 1,
+        idproveedor: parseInt(idProveedor),
+      },
+      select: {
+        id: true,
+      },
+    })
+
+    const data = await prisma.notasdepedido.create({
+      data: {
+        fecha,
+        version: 1,
+        vencimiento,
+        idestadonp: 1,
+        idtipocompra: parseInt(idTipoCompra),
+        idusuario: parseInt(idUsuario),
+        idproveedor: parseInt(idProveedor),
+        detallenp: {
+          createMany: {
+            data: detalles.map((dnp) => dnp = {
+              cantidadpedida: parseInt(dnp.cantidadpedida),
+              precio: parseFloat(dnp.precio),
+              idproductoproveedor: {}
+            }),
+            skipDuplicates: true,
+          }
+        },
+      },
+      include: {
+        proveedores: {
+          select: {
+            id: true,
+          },
+        },
+        usuarios: {
+          select: {
+            id: true,
+          },
+        },
+        detallenp: {
+          include: {
+            productosxproveedores: {
+              include: {
+                productos: {
+                  select: {
+                    id: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    res.status(200).json({ data, status: 200 });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ mensaje: "Error al crear nota de pedido", status: 400 });
+  }
+}
+
 export { 
   getNPS,
-  getNPbyId
+  getNPbyId,
+  createNP
 };
