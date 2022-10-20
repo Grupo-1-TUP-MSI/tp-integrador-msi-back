@@ -173,15 +173,16 @@ const createNP = async (req, res) => {
   console.log(`Fecha: ${fecha} - Vencimiento: ${vencimiento}`);
 
   try {
-    const obtenerProductoProveedor = await prisma.productosxproveedores.findFirst({
-      where: {
-        idproducto: 1, // viene en el detalle del body
-        idproveedor: parseInt(idProveedor),
-      },
-      select: {
-        id: true,
-      },
-    })
+    const obtenerProductoProveedor = async (idProducto) => {
+      const idProductoProveedor = await prisma.productosxproveedores.findFirst({
+        where: {
+          idproducto: parseInt(idProducto),
+          idproveedor: parseInt(idProveedor),
+        },
+      });
+      console.log(idProductoProveedor.id);
+      return idProductoProveedor.id;
+    };
 
     const data = await prisma.notasdepedido.create({
       data: {
@@ -194,10 +195,10 @@ const createNP = async (req, res) => {
         idproveedor: parseInt(idProveedor),
         detallenp: {
           createMany: {
-            data: detalles.map((dnp) => dnp = {
+            data: detalles.map(async (dnp) => dnp = {
               cantidadpedida: parseInt(dnp.cantidadpedida),
               precio: parseFloat(dnp.precio),
-              idproductoproveedor: 1
+              idproductoproveedor: await obtenerProductoProveedor(dnp.idproducto),
             })
           }
         },
