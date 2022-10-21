@@ -95,6 +95,7 @@ const getNPbyId = async (req, res) => {
       include: {
         proveedores: {
           select: {
+            id: true,
             nombre: true,
           },
         },
@@ -124,7 +125,7 @@ const getNPbyId = async (req, res) => {
       version,
       vencimiento,
       usuarios: { nombrecompleto },
-      proveedores: { nombre },
+      proveedores: { id: idProvedor, nombre },
       idestadonp,
       idtipocompra,
       detallenp,
@@ -151,8 +152,9 @@ const getNPbyId = async (req, res) => {
       id,
       fecha,
       version,
-      plazoentrega: calcularPlazoEntregaFormated(fecha, vencimiento),
+      plazoentrega: calcularPlazoEntrega(fecha, vencimiento),
       usuario: nombrecompleto,
+      idProvedor,
       proveedor: nombre,
       idestadonp,
       idtipocompra,
