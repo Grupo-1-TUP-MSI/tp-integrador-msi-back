@@ -11,9 +11,7 @@ import authRoutes from "./modules/auth/auth.routes";
 import productoRoutes from "./modules/productos/producto.routes";
 import productoproveedorRoutes from "./modules/productos/productoproveedor.routes";
 import notasdepedidoRoutes from "./modules/notasdepedido/notasdepedido.routes";
-
-
-
+import reporteRoutes from "./modules/reportes/reporte.routes";
 
 const app = express();
 
@@ -34,5 +32,6 @@ app.use("/productos", productoRoutes);
 app.use("/proveedores", proveedorRoutes);
 app.use("/productosproveedores",productoproveedorRoutes);
 app.use("/np", notasdepedidoRoutes);
+app.use("/reportes", reporteRoutes);
 
 export default app;
