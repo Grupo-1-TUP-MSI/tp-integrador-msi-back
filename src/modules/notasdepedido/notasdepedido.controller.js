@@ -49,6 +49,7 @@ const getNPS = async (req, res) => {
           cantidadpedida,
           cantidadrecibida,
           precio,
+          estado,
           productosxproveedores: {
             productos: { nombre },
           },
@@ -57,6 +58,7 @@ const getNPS = async (req, res) => {
           id,
           cantidadpedida,
           cantidadrecibida,
+          estado,
           precio: parseFloat(precio),
           producto: nombre,
         };
@@ -132,6 +134,7 @@ const getNPbyId = async (req, res) => {
         id,
         cantidadpedida,
         precio,
+        estado,
         productosxproveedores: {
           productos: { nombre },
         },
@@ -139,6 +142,7 @@ const getNPbyId = async (req, res) => {
       return {
         id,
         cantidadpedida,
+        estado,
         precio: parseFloat(precio),
         producto: nombre,
       };
@@ -203,6 +207,7 @@ const createNP = async (req, res) => {
               cantidadpedida: parseInt(dnp.cantidadpedida),
               precio: parseFloat(dnp.precio),
               idproductoproveedor: arregloIdProductoProveedor[detalles.indexOf(dnp)],
+              estado: true
             })
           }
         },
@@ -238,7 +243,66 @@ const cambiarEstadoNP = async (req, res) => {
 }
 
 const updateNP = async (req, res) => {
-  console.log('Editar NP');
+  const { idNotaPedido } = req.params;
+  const { fecha, plazoentrega, idUsuario, idProveedor, idEstadoNP, idTipoCompra, detalles } = req.body;
+
+  const vencimiento = new Date(
+    new Date(fecha).setDate(new Date(fecha).getDate() + plazoentrega)
+  ).toISOString();
+
+  try {
+    const arregloIdProductoProveedor = await Promise.all(
+      detalles.map(async (detalle) => {
+        console.log(detalle);
+        const idProductoProveedor = await prisma.productosxproveedores.findFirst(
+          {
+            where: {
+              idproducto: parseInt(detalle.idProducto),
+              idproveedor: parseInt(idProveedor),
+            },
+          }
+        );
+        return idProductoProveedor.id;
+      })
+    );
+
+    const data = await prisma.notasdepedido.update({
+      where: {
+        id: parseInt(idNotaPedido),
+      },
+      data: {
+        vencimiento,
+        idestadonp: parseInt(idEstadoNP),
+        idtipocompra: parseInt(idTipoCompra),
+        idusuario: parseInt(idUsuario),
+        idproveedor: parseInt(idProveedor),
+        detallenp: {
+          upsert: detalles.map( (dnp) => dnp = {
+            where: {
+              id: parseInt(dnp.id) || 0,
+            },
+            create: {
+              cantidadpedida: parseInt(dnp.cantidadPedida),
+              precio: parseFloat(dnp.precio),
+              idproductoproveedor: arregloIdProductoProveedor[detalles.indexOf(dnp)],
+              estado: true
+            },
+            update: {
+              cantidadpedida: parseInt(dnp.cantidadPedida),
+              precio: parseFloat(dnp.precio),
+              idproductoproveedor: arregloIdProductoProveedor[detalles.indexOf(dnp)],
+              estado: dnp.estado
+            }
+          })
+        },
+      }
+    });
+
+    res.status(200).json({ mensaje: 'Nota de pedido actualizada correctamente', status: 200 });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ mensaje: "Error al actualizar nota de pedido", status: 400 });
+  }
 }
 
 export { 
