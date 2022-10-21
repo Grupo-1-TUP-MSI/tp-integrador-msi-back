@@ -215,8 +215,36 @@ const createNP = async (req, res) => {
   }
 }
 
+const cambiarEstadoNP = async (req, res) => {
+  const { id } = req.params;
+  const { idEstadoNP } = req.body;
+  try {
+    const data = await prisma.notasdepedido.update({
+      where: {
+        id: parseInt(id),
+      },
+      data: {
+        estadonp: {
+          connect: {
+            id: parseInt(idEstadoNP),
+          }
+        }
+      },
+    });
+    res.status(200).json({ mensaje: "Estado actualizado con exito", status: 200 });
+  } catch (error) {
+    res.status(400).json({ mensaje: "Error al cambiar estado de nota de pedido", status: 400 });
+  }
+}
+
+const updateNP = async (req, res) => {
+  console.log('Editar NP');
+}
+
 export { 
   getNPS,
   getNPbyId,
-  createNP
+  createNP,
+  cambiarEstadoNP,
+  updateNP
 };
