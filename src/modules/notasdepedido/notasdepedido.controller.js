@@ -216,12 +216,12 @@ const createNP = async (req, res) => {
 }
 
 const cambiarEstadoNP = async (req, res) => {
-  const { id } = req.params;
+  const { idNotaPedido } = req.params;
   const { idEstadoNP } = req.body;
   try {
     const data = await prisma.notasdepedido.update({
       where: {
-        id: parseInt(id),
+        id: parseInt(idNotaPedido),
       },
       data: {
         estadonp: {

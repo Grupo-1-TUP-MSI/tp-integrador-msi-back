@@ -12,7 +12,7 @@ const router = Router();
 router.get("/", getNPS);
 router.get("/:idNotaPedido", getNPbyId);
 router.post("/", createNP);
-router.put("/estado/:id", cambiarEstadoNP);
-router.put("/editar/:id", updateNP);
+router.put("/estado/:idNotaPedido", cambiarEstadoNP);
+router.put("/editar/:idNotaPedido", updateNP);
 
 export default router;
