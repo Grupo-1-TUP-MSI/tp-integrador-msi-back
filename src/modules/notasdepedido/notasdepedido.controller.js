@@ -173,16 +173,19 @@ const createNP = async (req, res) => {
   console.log(`Fecha: ${fecha} - Vencimiento: ${vencimiento}`);
 
   try {
-    const obtenerProductoProveedor = async (idProducto) => {
-      const idProductoProveedor = await prisma.productosxproveedores.findFirst({
-        where: {
-          idproducto: parseInt(idProducto),
-          idproveedor: parseInt(idProveedor),
-        },
-      });
-      console.log(idProductoProveedor.id);
-      return idProductoProveedor.id;
-    };
+    const arregloIdProductoProveedor = await Promise.all(
+      detalles.map(async (detalle) => {
+        const idProductoProveedor = await prisma.productosxproveedores.findFirst(
+          {
+            where: {
+              idproducto: parseInt(detalle.idproducto),
+              idproveedor: parseInt(idProveedor),
+            },
+          }
+        );
+        return idProductoProveedor.id;
+      })
+    );
 
     const data = await prisma.notasdepedido.create({
       data: {
@@ -195,10 +198,10 @@ const createNP = async (req, res) => {
         idproveedor: parseInt(idProveedor),
         detallenp: {
           createMany: {
-            data: detalles.map(async (dnp) => dnp = {
+            data: detalles.map( (dnp) => dnp = {
               cantidadpedida: parseInt(dnp.cantidadpedida),
               precio: parseFloat(dnp.precio),
-              idproductoproveedor: 1, // ACA DEBERIA IR EL ID DEL PRODUCTO PROVEEDOR
+              idproductoproveedor: arregloIdProductoProveedor[detalles.indexOf(dnp)],
             })
           }
         },
