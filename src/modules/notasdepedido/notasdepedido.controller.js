@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { calcularPlazoEntrega } from "../../utils/helpers";
+import { calcularPlazoEntrega, calcularPlazoEntregaFormated } from "../../utils/helpers";
 const prisma = new PrismaClient();
 
 const getNPS = async (req, res) => {
@@ -147,7 +147,7 @@ const getNPbyId = async (req, res) => {
       id,
       fecha,
       version,
-      plazoentrega: calcularPlazoEntrega(fecha, vencimiento),
+      plazoentrega: calcularPlazoEntregaFormated(fecha, vencimiento),
       usuario: nombrecompleto,
       proveedor: nombre,
       idestadonp,
