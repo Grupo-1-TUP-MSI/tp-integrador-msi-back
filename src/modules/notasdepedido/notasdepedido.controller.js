@@ -13,7 +13,7 @@ const getNPS = async (req, res) => {
         },
         usuarios: {
           select: {
-            usuario: true,
+            nombrecompleto: true,
           },
         },
         detallenp: {
@@ -37,7 +37,7 @@ const getNPS = async (req, res) => {
         fecha,
         version,
         vencimiento,
-        usuarios: { usuario },
+        usuarios: { nombrecompleto },
         proveedores: { nombre },
         idestadonp,
         idtipocompra,
@@ -66,7 +66,8 @@ const getNPS = async (req, res) => {
         fecha,
         version,
         vencimiento,
-        usuario,
+        plazoentrega: calcularPlazoEntrega(fecha, vencimiento),
+        usuario: nombrecompleto,
         proveedor: nombre,
         idestadonp,
         idtipocompra,
@@ -97,7 +98,7 @@ const getNPbyId = async (req, res) => {
         },
         usuarios: {
           select: {
-            usuario: true,
+            nombrecompleto: true,
           },
         },
         detallenp: {
@@ -120,7 +121,7 @@ const getNPbyId = async (req, res) => {
       fecha,
       version,
       vencimiento,
-      usuarios: { usuario },
+      usuarios: { nombrecompleto },
       proveedores: { nombre },
       idestadonp,
       idtipocompra,
@@ -147,7 +148,7 @@ const getNPbyId = async (req, res) => {
       fecha,
       version,
       plazoentrega: calcularPlazoEntrega(fecha, vencimiento),
-      usuario,
+      usuario: nombrecompleto,
       proveedor: nombre,
       idestadonp,
       idtipocompra,
