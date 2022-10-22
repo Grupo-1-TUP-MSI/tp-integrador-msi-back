@@ -6,15 +6,13 @@ const prisma = new PrismaClient();
 const getStock = async (req, res) => {
   try {
     const data = await prisma.$queryRaw
-      `SELECT p.id, p.nombre 
-      FROM productos p
-      INNER JOIN productosxproveedores pp ON p.id = pp.idproducto
-      INNER JOIN detallenp dp ON pp.id = dp.idproductoproveedor
-      INNER JOIN notasdepedido np ON dp.idnp = np.id
-      WHERE 
-        p.stock < p.stockminimo
-        AND NOT(np.idestadonp = 2)
-      ;`
+      `select distinct  p.id, p.nombre 
+      from notasdepedido n 
+      inner join detallenp d on n.id = d.idnp 
+      inner join productosxproveedores pp on pp.id = d.idproductoproveedor 
+      inner join productos p on p.id = pp.idproducto
+      where p.stock < p.stockminimo and not (n.idestadonp=2)
+      limit 2`
 
     res.status(200).json({ data, status: 200 });
   } catch (error) {
