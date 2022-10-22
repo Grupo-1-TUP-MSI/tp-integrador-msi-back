@@ -238,6 +238,65 @@ const cambiarEstadoNP = async (req, res) => {
         }
       },
     });
+
+    // descontar stock
+    if (idEstadoNP == 3) {
+      const np = await prisma.notasdepedido.findUnique({
+        where: {
+          id: parseInt(idNotaPedido),
+        },
+        include: {
+          detallenp: {
+            include: {
+              productosxproveedores: {
+                include: {
+                  productos: {
+                    select: {
+                      id: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+      const detalles = np.detallenp.map((dnp) => {
+        const {
+          id,
+          cantidadpedida,
+          precio,
+          estado,
+          productosxproveedores: {
+            productos: { id: idproducto },
+          },
+        } = dnp;
+        return {
+          id,
+          cantidadpedida,
+          estado,
+          precio: parseFloat(precio),
+          idproducto,
+        };
+      });
+      detalles.forEach(async (detalle) => {
+        const producto = await prisma.productos.findUnique({
+          where: {
+            id: detalle.idproducto,
+          },
+        });
+        const stock = producto.stock + detalle.cantidadpedida;
+        await prisma.productos.update({
+          where: {
+            id: detalle.idproducto,
+          },
+          data: {
+            stock,
+          },
+        });
+      });
+    }
+
     res.status(200).json({ mensaje: "Estado actualizado con exito", status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: "Error al cambiar estado de nota de pedido", status: 400 });
