@@ -305,10 +305,111 @@ const updateNP = async (req, res) => {
   }
 }
 
+
+
+const getNPforPDF = async (req, res) => {
+  const { idNotaPedido } = req.params;
+  try {
+    const data = await prisma.notasdepedido.findUnique({
+      where: {
+        id: parseInt(idNotaPedido),
+      },
+      include: {
+        proveedores: {
+          select: {
+            nombre: true,
+            direccion: true,
+            telefono: true,
+            email: true
+          },
+        },
+        usuarios: {
+          select: {
+            nombrecompleto: true,
+          },
+        },
+        detallenp: {
+          include: {
+            productosxproveedores: {
+              include: {
+                productos: {
+                  select: {
+                    nombre: true,
+                    descripcion: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    const {
+      id,
+      fecha,
+      version,
+      vencimiento,
+      usuarios: { nombrecompleto },
+      proveedores: { nombre, direccion, telefono, email },
+      
+      
+      detallenp,
+    } = data;
+    //let dateFormated = `${Days(fecha)}/${Month(fecha)}/${Year(fecha)} ${Hour(fecha)}:${Day(fecha)}:${Second(fecha)}`;
+    
+    const detalles = detallenp.map((dnp) => {
+      
+      const {
+        id,
+        cantidadpedida,
+        precio,  
+                     
+        productosxproveedores: {
+          productos: { nombre, descripcion },
+        },
+      } = dnp;
+      return {
+        id,
+        cantidadpedida,
+        
+        precio: parseFloat(precio),
+        producto: nombre,
+      };
+    });
+    
+    let acumTotal = 0;
+    detalles.forEach(element => {
+
+      acumTotal += parseFloat(element.precio) * parseInt(element.cantidadpedida);
+      
+    });
+    let acumGravado = acumTotal * 0.79;
+    const np = {
+      id,
+      fecha,
+      
+      vencimiento,
+      version,      
+      usuario: nombrecompleto,
+      proveedor: { nombre, direccion, telefono, email },
+      detalles,
+      acumTotal,
+      acumGravado
+    };
+    res.status(200).json({ data: np, status: 200 });
+  } catch (error) {
+    console.log(error)
+    res
+      .status(400)
+      .json({ mensaje: "Error al obtener nota de pedido para PDF", status: 400 });
+  }
+}
+
 export { 
   getNPS,
   getNPbyId,
   createNP,
   cambiarEstadoNP,
-  updateNP
+  updateNP,
+  getNPforPDF
 };
