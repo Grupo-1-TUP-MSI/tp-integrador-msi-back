@@ -390,15 +390,15 @@ const getNPforPDF = async (req, res) => {
     acumIVA   = acumGravado * 0.21;
 
     //Pasar a formato local
-    let fechaLocale = fecha.toLocaleString();
-    let vencimientoLocale = vencimiento.toLocaleString();
-    acumTotal = acumTotal.toLocaleString();
-    acumGravado = acumGravado.toLocaleString();
-    acumIVA = acumIVA.toLocaleString();
+    // let fechaLocale = fecha.toLocaleString();
+    // let vencimientoLocale = vencimiento.toLocaleString();
+    // acumTotal = acumTotal.toLocaleString();
+    // acumGravado = acumGravado.toLocaleString();
+    // acumIVA = acumIVA.toLocaleString();
     const np = {
       id,
-      fechaLocale,      
-      vencimientoLocale,
+      fecha ,      
+      vencimiento,
       version,      
       usuario: nombrecompleto,
       proveedor: { nombre, direccion, telefono, email },
