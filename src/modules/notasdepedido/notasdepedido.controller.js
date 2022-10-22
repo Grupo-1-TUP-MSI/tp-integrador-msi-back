@@ -364,39 +364,48 @@ const getNPforPDF = async (req, res) => {
       const {
         id,
         cantidadpedida,
-        precio,  
-                     
+        precio,                     
         productosxproveedores: {
           productos: { nombre, descripcion },
         },
       } = dnp;
       return {
         id,
-        cantidadpedida,
-        
+        cantidadpedida,        
         precio: parseFloat(precio),
-        producto: nombre,
+        total: parseFloat(precio) * cantidadpedida,
+        producto: nombre, descripcion,
       };
     });
     
     let acumTotal = 0;
+    let acumIVA   = 0;
+    let acumGravado = 0;
     detalles.forEach(element => {
 
-      acumTotal += parseFloat(element.precio) * parseInt(element.cantidadpedida);
+      acumGravado += parseFloat(element.precio) * parseInt(element.cantidadpedida);
       
     });
-    let acumGravado = acumTotal * 0.79;
+    acumTotal = acumGravado * 1.21;
+    acumIVA   = acumGravado * 0.21;
+
+    //Pasar a formato local
+    let fechaLocale = fecha.toLocaleString();
+    let vencimientoLocale = vencimiento.toLocaleString();
+    acumTotal = acumTotal.toLocaleString();
+    acumGravado = acumGravado.toLocaleString();
+    acumIVA = acumIVA.toLocaleString();
     const np = {
       id,
-      fecha,
-      
-      vencimiento,
+      fechaLocale,      
+      vencimientoLocale,
       version,      
       usuario: nombrecompleto,
       proveedor: { nombre, direccion, telefono, email },
       detalles,
       acumTotal,
-      acumGravado
+      acumGravado,
+      acumIVA
     };
     res.status(200).json({ data: np, status: 200 });
   } catch (error) {
