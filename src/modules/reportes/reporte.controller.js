@@ -12,7 +12,7 @@ const getStock = async (req, res) => {
       inner join productosxproveedores pp on pp.id = d.idproductoproveedor 
       inner join productos p on p.id = pp.idproducto
       where p.stock < p.stockminimo and not (n.idestadonp=2)
-      limit 2`
+      limit 5;`;
 
     res.status(200).json({ data, status: 200 });
   } catch (error) {
