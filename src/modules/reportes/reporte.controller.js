@@ -24,6 +24,7 @@ const getStock = async (req, res) => {
 
 const getPendienteEntrega = async (req, res) => {
   try {
+    // traer solo 5 resultados
     const data = await prisma.notasdepedido.findMany({
       where: {
         idestadonp: 2
@@ -31,6 +32,7 @@ const getPendienteEntrega = async (req, res) => {
       include: {
         proveedores: true,
       },
+      take: 5
     });
 
     const np = [];
