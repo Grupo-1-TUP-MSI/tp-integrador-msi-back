@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { encryptPassword, matchPassword } from '../auth/auth.controller'
+import { calcularPlazoEntrega } from "../../utils/helpers";
 const prisma = new PrismaClient();
 
 const getStock = async (req, res) => {
@@ -23,6 +24,7 @@ const getStock = async (req, res) => {
 
 const getPendienteEntrega = async (req, res) => {
   try {
+    // traer solo 5 resultados
     const data = await prisma.notasdepedido.findMany({
       where: {
         idestadonp: 2
@@ -30,12 +32,15 @@ const getPendienteEntrega = async (req, res) => {
       include: {
         proveedores: true,
       },
+      take: 5
     });
 
     const np = [];
     data.forEach(nota => {
-      const { id, version, proveedores:{nombre}, idtipocompra } = nota;
-      np.push({ id, version, proveedor: nombre, idtipocompra });
+      const { id, version, vencimiento, proveedores:{nombre}, idtipocompra } = nota;
+      const fechaHoy = new Date();
+      const demora = calcularPlazoEntrega(fechaHoy, vencimiento);
+      np.push({ id, version, demora, proveedor: nombre, idtipocompra });
     });
 
     res.status(200).json({ data: np, status: 200 });
