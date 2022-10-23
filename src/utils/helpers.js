@@ -17,11 +17,34 @@ const calcularPlazoEntregaFormated = (fecha, vencimiento) => {
 };
 
 const ordenarCompraVentaMensual = (resultado) => {
+  const fechaActual = new Date();
+  const mesActual = fechaActual.getMonth() + 1;
+  for(let i = 0; i < 12; i++) {
+    const index = resultado.meses.findIndex(m => m === i + 1);
+    if (index === -1) {
+      resultado.meses.push(i + 1);
+      resultado.compras.push(0);
+      resultado.ventas.push(0);
+    }
+  }
   
+  const mesesOrdenados = [];
+  const comprasOrdenadas = [];
+  // const ventasOrdenadas = [];
+  for(let i = 0; i < 12; i++) {
+    const mes = (mesActual + i) % 12 + 1;
+    const index = resultado.meses.findIndex(m => m === mes);
+      mesesOrdenados.push(mes);
+      comprasOrdenadas.push(resultado.compras[index]);
+      // ventasOrdenadas.push(resultado.ventas[index]);
+  }
+  resultado.meses = mesesOrdenados;
+  resultado.compras = comprasOrdenadas;
+  // resultado.ventas = ventasOrdenadas;
 }
 
 export {
   calcularPlazoEntrega,
   calcularPlazoEntregaFormated,
-  ordenarCompraVentaMensual
+  ordenarCompraVentaMensual,
 }
