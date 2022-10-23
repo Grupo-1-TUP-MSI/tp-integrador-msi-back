@@ -16,7 +16,7 @@ router.get("/:idNotaPedido", getNPbyId);
 router.get("/pdf/:idNotaPedido", getNPforPDF);
 router.post("/", createNP);
 router.put("/estado/:idNotaPedido", cambiarEstadoNP);
-router.put("/editar/:idNotaPedido", updateNP);
+router.put("/:idNotaPedido", updateNP);
 
 
 export default router;
