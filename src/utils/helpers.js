@@ -16,7 +16,12 @@ const calcularPlazoEntregaFormated = (fecha, vencimiento) => {
   return fechaDate.toLocaleDateString() + " - " + vencimientoDate.toLocaleDateString() + " (" + diffDays + " días)";
 };
 
+const ordenarCompraVentaMensual = (resultado) => {
+  
+}
+
 export {
   calcularPlazoEntrega,
-  calcularPlazoEntregaFormated
+  calcularPlazoEntregaFormated,
+  ordenarCompraVentaMensual
 }

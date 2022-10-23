@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { encryptPassword, matchPassword } from '../auth/auth.controller'
-import { calcularPlazoEntrega } from "../../utils/helpers";
+import { calcularPlazoEntrega, ordenarCompraVentaMensual } from "../../utils/helpers";
 const prisma = new PrismaClient();
 
 const getStock = async (req, res) => {
@@ -55,6 +55,9 @@ const getCompraVentaMensual = async (req, res) => {
       },
       include: {
         detallenp: true
+      },
+      orderBy: {
+        fecha: 'asc',
       }
     });
 
@@ -70,11 +73,11 @@ const getCompraVentaMensual = async (req, res) => {
       const fechaNota = new Date(fecha);
       const mes = fechaNota.getMonth() + 1;
       const anio = fechaNota.getFullYear();
-      const mesAnio = `${mes}-${anio}`;
+      // const mesAnio = `${mes}-${anio}`;
       const total = detallenp.reduce((acc, item) => acc + parseFloat(item.precio), 0);
-      const index = resultado.meses.findIndex(m => m === mesAnio);
+      const index = resultado.meses.findIndex(m => m === mes);
       if (index === -1) {
-        resultado.meses.push(mesAnio);
+        resultado.meses.push(mes);
         resultado.compras.push(total);
       }
       else {
@@ -82,7 +85,6 @@ const getCompraVentaMensual = async (req, res) => {
       }
 
     });
-    console.log(resultado);
 
     // const dataVentas = await prisma.notasdepedido.findMany({
     //   where: {
