@@ -9,6 +9,6 @@ const router = Router();
 
 router.get("/stock", getStock);
 router.get("/np/pde", getPendienteEntrega);
-router.get("/compra-venta-mensual", getCompraVentaMensual);
+router.get("/compraventa", getCompraVentaMensual);
 
 export default router;

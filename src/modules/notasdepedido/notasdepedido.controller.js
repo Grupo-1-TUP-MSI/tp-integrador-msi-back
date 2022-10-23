@@ -170,7 +170,7 @@ const getNPbyId = async (req, res) => {
 
 const createNP = async (req, res) => {
   console.log(req.body);
-  const { plazoentrega, idUsuario, idProveedor, idTipoCompra, detalles } = req.body;
+  const { plazoentrega, idusuario, idproveedor, idtipocompra, detalles } = req.body;
   // const fecha = new Date().toISOString().split("T")[0];
   // fecha en formato datetime
   const fecha = new Date().toISOString();
@@ -200,9 +200,9 @@ const createNP = async (req, res) => {
         version: 1,
         vencimiento,
         idestadonp: 1,
-        idtipocompra: parseInt(idTipoCompra),
-        idusuario: parseInt(idUsuario),
-        idproveedor: parseInt(idProveedor),
+        idtipocompra: parseInt(idtipocompra),
+        idusuario: parseInt(idusuario),
+        idproveedor: parseInt(idproveedor),
         detallenp: {
           createMany: {
             data: detalles.map( (dnp) => dnp = {
@@ -305,13 +305,22 @@ const cambiarEstadoNP = async (req, res) => {
 
 const updateNP = async (req, res) => {
   const { idNotaPedido } = req.params;
-  const { fecha, plazoentrega, idUsuario, idProveedor, idEstadoNP, idTipoCompra, detalles } = req.body;
-
-  const vencimiento = new Date(
-    new Date(fecha).setDate(new Date(fecha).getDate() + plazoentrega)
-  ).toISOString();
+  const { plazoentrega, idproveedor, idtipocompra, detalles } = req.body;
 
   try {
+    const obtenerNotaPedido = await prisma.notasdepedido.findUnique({
+      where: {
+        id: parseInt(idNotaPedido),
+      },
+      select: {
+        fecha: true,
+      }
+    });
+
+    const vencimiento = new Date(
+      new Date(obtenerNotaPedido.fecha).setDate(new Date(obtenerNotaPedido.fecha).getDate() + plazoentrega)
+    ).toISOString();
+
     const arregloIdProductoProveedor = await Promise.all(
       detalles.map(async (detalle) => {
         console.log(detalle);
@@ -319,7 +328,7 @@ const updateNP = async (req, res) => {
           {
             where: {
               idproducto: parseInt(detalle.idProducto),
-              idproveedor: parseInt(idProveedor),
+              idproveedor: parseInt(idproveedor),
             },
           }
         );
@@ -327,33 +336,54 @@ const updateNP = async (req, res) => {
       })
     );
 
+    // <!-- Dejar para revision -->
+    // const data = await prisma.notasdepedido.update({
+    //   where: {
+    //     id: parseInt(idNotaPedido),
+    //   },
+    //   data: {
+    //     vencimiento,
+    //     idestadonp: parseInt(idestadonp),
+    //     idproveedor: parseInt(idproveedor),
+    //     idtipocompra: parseInt(idtipocompra),
+    //     detallenp: {
+    //       upsert: detalles.map( (dnp) => dnp = {
+    //         where: {
+    //           id: parseInt(dnp.id) || 0,
+    //         },
+    //         create: {
+    //           cantidadpedida: parseInt(dnp.cantidadPedida),
+    //           precio: parseFloat(dnp.precio),
+    //           idproductoproveedor: arregloIdProductoProveedor[detalles.indexOf(dnp)],
+    //           estado: true
+    //         },
+    //         update: {
+    //           cantidadpedida: parseInt(dnp.cantidadPedida),
+    //           precio: parseFloat(dnp.precio),
+    //           idproductoproveedor: arregloIdProductoProveedor[detalles.indexOf(dnp)],
+    //           estado: dnp.estado
+    //         }
+    //       })
+    //     },
+    //   }
+    // });
+
     const data = await prisma.notasdepedido.update({
       where: {
         id: parseInt(idNotaPedido),
       },
       data: {
         vencimiento,
-        idestadonp: parseInt(idEstadoNP),
-        idtipocompra: parseInt(idTipoCompra),
-        idusuario: parseInt(idUsuario),
-        idproveedor: parseInt(idProveedor),
+        idproveedor: parseInt(idproveedor),
+        idtipocompra: parseInt(idtipocompra),
         detallenp: {
-          upsert: detalles.map( (dnp) => dnp = {
-            where: {
-              id: parseInt(dnp.id) || 0,
-            },
-            create: {
-              cantidadpedida: parseInt(dnp.cantidadPedida),
-              precio: parseFloat(dnp.precio),
-              idproductoproveedor: arregloIdProductoProveedor[detalles.indexOf(dnp)],
-              estado: true
-            },
-            update: {
-              cantidadpedida: parseInt(dnp.cantidadPedida),
-              precio: parseFloat(dnp.precio),
-              idproductoproveedor: arregloIdProductoProveedor[detalles.indexOf(dnp)],
-              estado: dnp.estado
-            }
+          deleteMany: {
+            idnp: parseInt(idNotaPedido),
+          },
+          create: detalles.map( (dnp) => dnp = {
+            cantidadpedida: parseInt(dnp.cantidadPedida),
+            precio: parseFloat(dnp.precio),
+            idproductoproveedor: arregloIdProductoProveedor[detalles.indexOf(dnp)],
           })
         },
       }
