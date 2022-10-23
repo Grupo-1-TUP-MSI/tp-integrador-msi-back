@@ -13,8 +13,8 @@ const getUsuarios = async (req, res) => {
       }
     });
     data.forEach(user => {
-      const { id, usuario, roles:{rol}, estado } = user;
-      usuarios.push({ id, usuario, rol, estado });
+      const { id, usuario, roles:{rol}, estado, nombrecompleto } = user;
+      usuarios.push({ id, usuario, nombrecompleto, rol, estado });
     });
     res.status(200).json({ data: usuarios, status: 200 });
   } catch (error) {
@@ -33,15 +33,15 @@ const getUsuario = async (req, res) => {
         roles: true,
       },
     });
-    const { usuario, roles:{rol}, estado } = data;
-    res.status(200).json({ data: { id, usuario, rol, estado }, status: 200 });
+    const { usuario, roles:{rol}, nombrecompleto, estado } = data;
+    res.status(200).json({ data: { id, usuario, rol, nombrecompleto, estado }, status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al obtener usuario', status: 400 });
   }
 };
 
 const createUsuario = async (req, res) => {
-  const { usuario, password, idRol} = req.body;
+  const { usuario, password, nombrecompleto, idRol} = req.body;
   try {
     const user = await prisma.usuarios.findFirst({
       where: {
@@ -56,6 +56,7 @@ const createUsuario = async (req, res) => {
         data: {
           usuario,
           password: await encryptPassword(password),
+          nombrecompleto,
           estado: true,
           roles: {
             connect: {
@@ -73,7 +74,7 @@ const createUsuario = async (req, res) => {
 
 const updateUsuario = async (req, res) => {
   const { id } = req.params;
-  const { usuario, password, idRol, estado } = req.body;
+  const { usuario, password, nombrecompleto, idRol, estado } = req.body;
   try {
     const usuarioFound = await prisma.usuarios.findUnique({
       where: {
@@ -92,6 +93,7 @@ const updateUsuario = async (req, res) => {
       data: {
         usuario,
         password: await encryptPassword(password),
+        nombrecompleto,
         estado: true,
         roles: {
           connect: {
