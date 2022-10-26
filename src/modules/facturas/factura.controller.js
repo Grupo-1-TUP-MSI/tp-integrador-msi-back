@@ -32,12 +32,12 @@ const getFacturas = async (req, res) => {
     });
 
     const facturas = data.map(factura => {
-      const { id, fecha, usuarios: { nombrecompleto: usuario }, clientes: { id: idCliente, nombre:cliente },  detallefactura } = factura;
+      const { id, fecha, usuarios: { nombrecompleto: usuario }, clientes: { id: idCliente, nombre:cliente }, idtipoventa, detallefactura } = factura;
       const detalle = detallefactura.map(item => {
         const { id, cantidad, precio, productos: { nombre: producto } } = item;
         return { id, cantidad, precio: parseFloat(precio), producto };
       });
-      return { id, fecha, usuario, idCliente, cliente, detalle };
+      return { id, fecha, usuario, idCliente, cliente, idTipoVenta: idtipoventa, detalle };
     });
 
     res.status(200).json(facturas);
