@@ -181,5 +181,14 @@ model usuarios {
   estado         Boolean?
   roles          roles?          @relation(fields: [idrol], references: [id], onDelete: NoAction, onUpdate: NoAction)
   facturas       facturas[]
+  ganancias      ganancias[]
   notasdepedido  notasdepedido[]
+}
+
+model ganancias {
+  id         Int       @id @default(autoincrement())
+  vigencia   DateTime? @db.Timestamp(6)
+  porcentaje Decimal?  @db.Decimal(5, 2)
+  idusuario  Int?
+  usuarios   usuarios? @relation(fields: [idusuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

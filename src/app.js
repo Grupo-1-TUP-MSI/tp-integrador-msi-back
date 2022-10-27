@@ -13,6 +13,7 @@ import productoproveedorRoutes from "./modules/productos/productoproveedor.route
 import notasdepedidoRoutes from "./modules/notasdepedido/notasdepedido.routes";
 import reporteRoutes from "./modules/reportes/reporte.routes";
 import facturaRoutes from "./modules/facturas/factura.routes";
+import gananciaRoutes from "./modules/ganancias/ganancia.routes";
 
 const app = express();
 
@@ -35,5 +36,6 @@ app.use("/productosproveedores",productoproveedorRoutes);
 app.use("/np", notasdepedidoRoutes);
 app.use("/reportes", reporteRoutes);
 app.use("/facturas", facturaRoutes);
+app.use("/ganancias", gananciaRoutes);
 
 export default app;
