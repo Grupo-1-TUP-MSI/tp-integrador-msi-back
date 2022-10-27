@@ -1,6 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { encryptPassword, matchPassword } from '../auth/auth.controller'
-import { calcularPlazoEntrega, ordenarCompraVentaMensual } from "../../utils/helpers";
+import { encryptPassword, matchPassword } from "../auth/auth.controller";
+import {
+  calcularPlazoEntrega,
+  ordenarCompraVentaMensual,
+} from "../../utils/helpers";
 const prisma = new PrismaClient();
 
 const getFacturas = async (req, res) => {
@@ -12,7 +15,7 @@ const getFacturas = async (req, res) => {
           select: {
             id: true,
             nombre: true,
-          }
+          },
         },
         usuarios: {
           select: {
@@ -24,28 +27,46 @@ const getFacturas = async (req, res) => {
             productos: {
               select: {
                 nombre: true,
-              }
-            }
+              },
+            },
           },
-        }
+        },
       },
     });
 
-    const facturas = data.map(factura => {
-      const { id, fecha, usuarios: { nombrecompleto: usuario }, clientes: { id: idCliente, nombre:cliente }, idtipoventa, detallefactura } = factura;
-      const detalle = detallefactura.map(item => {
-        const { id, cantidad, precio, productos: { nombre: producto } } = item;
+    const facturas = data.map((factura) => {
+      const {
+        id,
+        fecha,
+        usuarios: { nombrecompleto: usuario },
+        clientes: { id: idCliente, nombre: cliente },
+        idtipoventa,
+        detallefactura,
+      } = factura;
+      const detalles = detallefactura.map((item) => {
+        const {
+          id,
+          cantidad,
+          precio,
+          productos: { nombre: producto },
+        } = item;
         return { id, cantidad, precio: parseFloat(precio), producto };
       });
-      return { id, fecha, usuario, idCliente, cliente, idTipoVenta: idtipoventa, detalle };
+      return {
+        id,
+        fecha,
+        usuario,
+        idCliente,
+        cliente,
+        idTipoVenta: idtipoventa,
+        detalles,
+      };
     });
 
     res.status(200).json(facturas);
   } catch (error) {
-    res.status(400).json('Error al obtener las facturas');
+    res.status(400).json("Error al obtener las facturas");
   }
-}
+};
 
-export {
-  getFacturas
-}
+export { getFacturas };
