@@ -31,11 +31,6 @@ const getGanancias = async (req, res) => {
 
 const createGanancia = async (req, res) => {
   const token = req.header('x-access-token');
-
-  if (!token) {
-    return res.status(401).json({ mensaje: 'No hay token, permiso no válido' });
-  }
-
   const tokenDecoded = jwt.verify(token, process.env.SECRET);
   const { id } = tokenDecoded;
 
