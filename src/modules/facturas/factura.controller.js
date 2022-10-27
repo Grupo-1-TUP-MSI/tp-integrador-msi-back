@@ -43,7 +43,7 @@ const getFacturas = async (req, res) => {
         idtipoventa,
         detallefactura,
       } = factura;
-      const detalle = detallefactura.map((item) => {
+      const detalles = detallefactura.map((item) => {
         const {
           id,
           cantidad,
@@ -59,7 +59,7 @@ const getFacturas = async (req, res) => {
         idCliente,
         cliente,
         idTipoVenta: idtipoventa,
-        detalle,
+        detalles,
       };
     });
 
