@@ -13,8 +13,10 @@ const getProductos = async (req, res) => {
     const productos = []
     data.forEach(producto => {
       const { id, nombre, descripcion, preciolista, stock, stockminimo, estado } = producto;
-      const precioVenta = preciolista + (preciolista * ganancia.porcentaje / 100);
-      productos.push({ id, nombre, descripcion, precioLista: preciolista, precioVenta, stock, stockminimo, estado });
+      const precioLista = parseFloat(preciolista);
+      const porcentaje = parseFloat(ganancia.porcentaje);
+      const precioVenta = precioLista + (precioLista * porcentaje / 100);
+      productos.push({ id, nombre, descripcion, precioLista, precioVenta, stock, stockminimo, estado });
     });
     res.status(200).json({ data: productos, status: 200 });
   } catch (error) {
