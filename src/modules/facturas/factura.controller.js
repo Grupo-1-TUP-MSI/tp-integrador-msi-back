@@ -110,6 +110,7 @@ const getFactforPDF = async (req, res) => {
     const {
       id,
       fecha,
+      numero,
       usuarios: { nombrecompleto },
       clientes: { nombre, direccion, telefono, email },   
       detallefactura,
@@ -145,15 +146,16 @@ const getFactforPDF = async (req, res) => {
     acumTotal = acumGravado * 1.21;
     acumIVA   = acumGravado * 0.21;
 
-    //Pasar a formato local
-    let fechaLocale = fecha.toLocaleString();//`${fecha.getDay()}/${fecha.getMonth()}/${fecha.getFullYear()} ${fecha.getHours()}:${fecha.getMinutes()}:${fecha.getSeconds()}`
+    //Pasar a formato local, tomará el formato de heroku mm/DD/yyyy
+    let fechaLocale = fecha.toLocaleString();
     
 
     const fact = {
       id,
-      fechaLocale,          
+      fechaLocale,
+      numero,          
       usuario: nombrecompleto,
-      proveedor: { nombre, direccion, telefono, email },
+      cliente: { nombre, direccion, telefono, email },
       detalles,
       acumTotal,
       acumGravado,
