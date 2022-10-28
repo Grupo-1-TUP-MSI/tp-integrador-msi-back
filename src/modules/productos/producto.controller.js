@@ -4,11 +4,17 @@ const prisma = new PrismaClient();
 const getProductos = async (req, res) => {
   try {
     const data = await prisma.productos.findMany();
+    const ganancia = await prisma.ganancias.findFirst({
+      orderBy: {
+        vigencia: 'desc'
+      }
+    });
 
     const productos = []
     data.forEach(producto => {
       const { id, nombre, descripcion, preciolista, stock, stockminimo, estado } = producto;
-      productos.push({ id, nombre, descripcion, preciolista, stock, stockminimo, estado });
+      const precioVenta = preciolista + (preciolista * ganancia.porcentaje / 100);
+      productos.push({ id, nombre, descripcion, precioLista: preciolista, precioVenta, stock, stockminimo, estado });
     });
     res.status(200).json({ data: productos, status: 200 });
   } catch (error) {
