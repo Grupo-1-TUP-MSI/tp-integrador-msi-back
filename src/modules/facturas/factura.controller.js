@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import jwt from "jsonwebtoken";
 import { encryptPassword, matchPassword } from "../auth/auth.controller";
 import {
   calcularPlazoEntrega,
@@ -69,6 +70,45 @@ const getFacturas = async (req, res) => {
   }
 };
 
+const createFactura = async (req, res) => {
+  const token = req.header('x-access-token');
+  const tokenDecoded = jwt.verify(token, process.env.SECRET);
+  const { id } = tokenDecoded;
+
+  const {
+    fecha,
+    idCliente,
+    idTipoVenta,
+    descuento,
+    detalles,
+  } = req.body;
+  try {
+    
+    const data = await prisma.facturas.create({
+      data: {
+        fecha,
+        idcliente: idCliente,
+        idtipoventa: idTipoVenta,
+        descuento,
+        idusuario: id,
+        detallefactura: {
+          create: detalles.map((item) => {
+            const { idProducto, cantidad, precio } = item;
+            return {
+              idproducto: idProducto,
+              cantidad,
+              precio,
+            };
+          }),
+        },
+      },
+    });
+
+    res.status(200).json('Factura creada correctamente');
+  } catch (error) {
+    res.status(400).json("Error al crear la factura");
+  }
+}
 
 const getFactforPDF = async (req, res) => {
   const { idFactura } = req.params;
@@ -170,5 +210,8 @@ const getFactforPDF = async (req, res) => {
   }
 }
 
-export { getFacturas,
-  getFactforPDF };
+export { 
+  getFacturas,
+  createFactura,
+  getFactforPDF 
+};
