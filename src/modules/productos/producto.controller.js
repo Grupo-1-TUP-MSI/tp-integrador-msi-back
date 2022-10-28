@@ -16,7 +16,7 @@ const getProductos = async (req, res) => {
       const precioLista = parseFloat(preciolista);
       const porcentaje = parseFloat(ganancia.porcentaje);
       const precioVenta = precioLista + (precioLista * porcentaje / 100);
-      productos.push({ id, nombre, descripcion, precioLista, precioVenta, stock, stockMinimo: stockminimo, estado });
+      productos.push({ id, nombre, descripcion, preciolista: precioLista, precioVenta, stock, stockminimo, estado });
     });
     res.status(200).json({ data: productos, status: 200 });
   } catch (error) {
@@ -33,7 +33,7 @@ const getProducto = async (req, res) => {
       },
     });
     const { nombre, descripcion, preciolista, stock, stockminimo, estado } = data;
-    res.status(200).json({ data: { id, nombre, descripcion, precioLista: preciolista, stock, stockMinimo: stockminimo, estado }, status: 200 });
+    res.status(200).json({ data: { id, nombre, descripcion, preciolista, stock, stockminimo, estado }, status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: "Error al obtener producto", status: 400 });
   }
