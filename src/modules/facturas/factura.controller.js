@@ -69,4 +69,104 @@ const getFacturas = async (req, res) => {
   }
 };
 
-export { getFacturas };
+
+const getFactforPDF = async (req, res) => {
+  const { idFactura } = req.params;
+  try {
+    const data = await prisma.facturas.findUnique({
+      where: {
+        id: parseInt(idFactura),
+      },
+      include: {
+        clientes: {
+          select: {
+            nombre: true,
+            direccion: true,
+            telefono: true,
+            email: true
+          },
+        },
+        usuarios: {
+          select: {
+            nombrecompleto: true,
+          },
+        },
+        detallefactura: {
+          include: {       
+              
+                productos: {
+                  select: {
+                    nombre: true,
+                    descripcion: true,
+                
+                  },
+                },
+              
+            
+          },
+        },
+      },
+    });
+    const {
+      id,
+      fecha,
+      usuarios: { nombrecompleto },
+      clientes: { nombre, direccion, telefono, email },   
+      detallefactura,
+    } = data;
+    
+    
+    const detalles = detallefactura.map((df) => {
+      
+      const {
+        id,
+        cantidad,
+        precio,
+        productos: { nombre, descripcion },
+        
+      } = df;
+      return {
+        id,
+        cantidad,        
+        precio: parseFloat(precio),
+        total: parseFloat(precio) * cantidad,
+        producto: nombre, descripcion,
+      };
+    });
+    
+    let acumTotal = 0;
+    let acumIVA   = 0;
+    let acumGravado = 0;
+    detalles.forEach(element => {
+
+      acumGravado += parseFloat(element.precio) * parseInt(element.cantidad);
+      
+    });
+    acumTotal = acumGravado * 1.21;
+    acumIVA   = acumGravado * 0.21;
+
+    //Pasar a formato local
+    let fechaLocale = fecha.toLocaleString();//`${fecha.getDay()}/${fecha.getMonth()}/${fecha.getFullYear()} ${fecha.getHours()}:${fecha.getMinutes()}:${fecha.getSeconds()}`
+    
+
+    const fact = {
+      id,
+      fechaLocale,          
+      usuario: nombrecompleto,
+      proveedor: { nombre, direccion, telefono, email },
+      detalles,
+      acumTotal,
+      acumGravado,
+      acumIVA
+    };
+    res.status(200).json({ data: fact, status: 200 });
+  } catch (error) {
+    console.log(error)
+    res
+      .status(400)
+      .json({ mensaje: "Error al obtener factura para PDF", status: 400 });
+  }
+}
+
+export { getFacturas,
+  getFactforPDF };
