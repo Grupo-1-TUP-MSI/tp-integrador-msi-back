@@ -327,7 +327,7 @@ const updateNP = async (req, res) => {
         const idProductoProveedor = await prisma.productosxproveedores.findFirst(
           {
             where: {
-              idproducto: parseInt(detalle.idproducto),
+              idproducto: parseInt(detalle.idProducto),
               idproveedor: parseInt(idproveedor),
             },
           }
