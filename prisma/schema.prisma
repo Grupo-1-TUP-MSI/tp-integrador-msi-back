@@ -29,7 +29,6 @@ model detallefactura {
   idfactura  Int?
   cantidad   Int?
   precio     Decimal?   @db.Decimal(13, 2)
-  descuento  Int?
   facturas   facturas?  @relation(fields: [idfactura], references: [id], onDelete: NoAction, onUpdate: NoAction)
   productos  productos? @relation(fields: [idproducto], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
@@ -54,20 +53,20 @@ model estadonp {
 }
 
 model facturas {
-  id               Int              @id @default(autoincrement())
-  fecha            DateTime?        @db.Timestamp(6)
-  idtipoventa      Int?
-  idtipopago       Int?
-  numero           Int?
-  fechavencimiento DateTime?        @db.Timestamp(6)
-  idusuario        Int?
-  idcliente        Int?
-  estado           Boolean?
-  clientes         clientes?        @relation(fields: [idcliente], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tipospago        tipospago?       @relation(fields: [idtipopago], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tiposventa       tiposventa?      @relation(fields: [idtipoventa], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  usuarios         usuarios?        @relation(fields: [idusuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  detallefactura   detallefactura[]
+  id             Int              @id @default(autoincrement())
+  fecha          DateTime?        @db.Timestamp(6)
+  idtipoventa    Int?
+  idtipopago     Int?
+  numero         Int?
+  idusuario      Int?
+  idcliente      Int?
+  estado         Boolean?
+  descuento      Decimal?         @default(0) @db.Decimal(5, 2)
+  clientes       clientes?        @relation(fields: [idcliente], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tipospago      tipospago?       @relation(fields: [idtipopago], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tiposventa     tiposventa?      @relation(fields: [idtipoventa], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuarios       usuarios?        @relation(fields: [idusuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  detallefactura detallefactura[]
 }
 
 model notasdepedido {
