@@ -381,7 +381,7 @@ const updateNP = async (req, res) => {
             idnp: parseInt(idNotaPedido),
           },
           create: detalles.map( (dnp) => dnp = {
-            cantidadpedida: parseInt(dnp.cantidadPedida),
+            cantidadpedida: parseInt(dnp.cantidadpedida),
             precio: parseFloat(dnp.precio),
             idproductoproveedor: arregloIdProductoProveedor[detalles.indexOf(dnp)],
           })
