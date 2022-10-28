@@ -70,6 +70,87 @@ const getFacturas = async (req, res) => {
 };
 
 
+const createFactura = async (req, res) => {
+  const token = req.header('x-access-token');
+  const tokenDecoded = jwt.verify(token, process.env.SECRET);
+  const { id } = tokenDecoded;
+
+  const {
+    fecha,
+    idCliente,
+    idTipoVenta,
+    idTipoPago,
+    descuento,
+    detalles,
+  } = req.body;
+  try {
+
+    const ultimaFactura = await prisma.facturas.findFirst({
+      select: {
+        fecha: true,
+      },
+      orderBy: {
+        id: "desc",
+      },
+    });
+
+    const fechaUltimaFactura = new Date(ultimaFactura.fecha); // fecha de la última factura
+    const fechaNuevaFactura = new Date(fecha); // fecha de la nueva factura
+
+    if(fechaUltimaFactura > fechaNuevaFactura) {
+      return res.status(400).json("La fecha de la factura no puede ser menor a la fecha de la última factura");
+    }
+
+    console.log("fechaUltimaFactura", fechaUltimaFactura); // 2021-07-01T00:00:00.000Z
+    console.log("fechaNuevaFactura", fechaNuevaFactura); // 2021-07-01T00:00:00.000Z
+
+    const data = await prisma.facturas.create({
+      data: {
+        fecha: fechaNuevaFactura,
+        idusuario: parseInt(id), // id del usuario que está creando la factura
+        idcliente: parseInt(idCliente), // id del cliente que está comprando
+        idtipoventa: parseInt(idTipoVenta), // id del tipo de venta (contado, crédito) 1 = contado, 2 = crédito
+        idtipopago: parseInt(idTipoPago), // id del tipo de pago (efectivo, tarjeta, transferencia) 1 = efectivo, 2 = tarjeta, 3 = transferencia
+        descuento: parseFloat(descuento), // descuento de la factura
+        estado: true,
+        detallefactura: {
+          createMany: {
+            data: detalles.map( (df) => df = {
+              cantidad: parseInt(df.cantidad),
+              precio: parseFloat(df.precio),
+              idproducto: parseInt(df.idProducto),
+            })
+          }
+        },
+      },
+    });
+
+    if (data) {
+      await prisma.$transaction(
+        detalles.map((item) => {
+          const { idProducto, cantidad } = item;
+          return prisma.productos.update({
+            where: {
+              id: idProducto,
+            },
+            data: {
+              stock: {
+                decrement: cantidad,
+              },
+            },
+          });
+        })
+      );
+    }
+
+    res.status(200).json('Factura creada correctamente');
+  } catch (error) {
+    res.status(400).json("Error al crear la factura");
+    // console.log(error);
+  }
+}
+
+
 const getFactforPDF = async (req, res) => {
   const { idFactura } = req.params;
   try {
@@ -170,5 +251,8 @@ const getFactforPDF = async (req, res) => {
   }
 }
 
-export { getFacturas,
-  getFactforPDF };
+export { 
+  getFacturas,
+  createFactura,
+  getFactforPDF 
+};
