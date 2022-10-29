@@ -140,6 +140,7 @@ const getNPbyId = async (req, res) => {
         precio,
         estado,
         productosxproveedores: {
+          idproducto,
           productos: { nombre },
         },
       } = dnp;
@@ -149,6 +150,7 @@ const getNPbyId = async (req, res) => {
         estado,
         precio: parseFloat(precio),
         producto: nombre,
+        idproducto
       };
     });
     const np = {
