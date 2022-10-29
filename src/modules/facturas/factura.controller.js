@@ -254,7 +254,7 @@ const getFactforPDF = async (req, res) => {
 }
 
 const procesarPago = async (req, res) => {
-    let preference = req.preference
+    let preference = req.body.preference
 
     mercadoPago.preferences.create(preference)
     .then(function(response){
