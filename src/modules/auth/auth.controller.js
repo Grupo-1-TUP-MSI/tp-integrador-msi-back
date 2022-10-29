@@ -91,9 +91,10 @@ const signIn = async (req, res) => {
       const fecha = new Date();
       const fechaExpiracion = new Date(fecha.getTime() + 86400000);
       const fechaExpiracionFormateada = fechaExpiracion.toLocaleString();
-      res.status(200).json({ token, fechaExpiracion: fechaExpiracionFormateada, rol: user.roles.nombre, status: 200 });
+      res.status(200).json({ token, fechaExpiracion: fechaExpiracionFormateada, rol: user.roles.rol, status: 200 });
     }
   } catch (error) {
+    console.log(error)
     res.status(400).json({ mensaje: 'Error al encontrar usuario', status: 400 });
   }
 };
