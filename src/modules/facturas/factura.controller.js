@@ -144,7 +144,7 @@ const createFactura = async (req, res) => {
       );
     }
 
-    res.status(200).json('Factura creada correctamente');
+    res.status(200).json( data ); // id de la factura creada
   } catch (error) {
     res.status(400).json("Error al crear la factura");
     // console.log(error);
