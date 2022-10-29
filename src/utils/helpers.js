@@ -30,17 +30,17 @@ const ordenarCompraVentaMensual = (resultado) => {
   
   const mesesOrdenados = [];
   const comprasOrdenadas = [];
-  // const ventasOrdenadas = [];
+  const ventasOrdenadas = [];
   for(let i = 0; i < 12; i++) {
     const mes = (mesActual + i) % 12 + 1;
     const index = resultado.meses.findIndex(m => m === mes);
-      mesesOrdenados.push(mes);
-      comprasOrdenadas.push(resultado.compras[index]);
-      // ventasOrdenadas.push(resultado.ventas[index]);
+    mesesOrdenados.push(mes);
+    comprasOrdenadas.push(resultado.compras[index]);
+    ventasOrdenadas.push(resultado.ventas[index]);
   }
   resultado.meses = mesesOrdenados;
   resultado.compras = comprasOrdenadas;
-  // resultado.ventas = ventasOrdenadas;
+  resultado.ventas = ventasOrdenadas;
 }
 
 export {
