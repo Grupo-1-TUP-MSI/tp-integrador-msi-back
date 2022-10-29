@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { encryptPassword, matchPassword } from "../auth/auth.controller";
+import jwt from 'jsonwebtoken';
 import {
   calcularPlazoEntrega,
   ordenarCompraVentaMensual,
