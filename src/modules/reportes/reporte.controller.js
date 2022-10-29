@@ -73,7 +73,7 @@ const getCompraVentaMensual = async (req, res) => {
       const mes = fechaNota.getMonth() + 1;
       // const anio = fechaNota.getFullYear();
       // const mesAnio = `${mes}-${anio}`;
-      const total = detallenp.reduce((acc, item) => acc + parseFloat(item.precio), 0);
+      const total = detallenp.reduce((acc, item) => acc + (parseFloat(item.precio) * item.cantidadpedida), 0);
       const index = resultado.meses.findIndex(m => m === mes);
       if (index === -1) {
         resultado.meses.push(mes);
@@ -86,32 +86,36 @@ const getCompraVentaMensual = async (req, res) => {
       }
     });
 
-    /*
-    const dataVentas = await prisma.notasdepedido.findMany({
+    const dataVentas = await prisma.facturas.findMany({
       where: {
-        idestadonp: 3
+        estado: true
       },
       include: {
-        detallenp: true
+        detallefactura: true
+      },
+      orderBy: {
+        fecha: 'asc',
       }
     });
-    const ventasMensuales = [];
-    dataVentas.forEach(nota => {
-      const { fecha, detallenp } = nota;
-      const fechaNota = new Date(fecha);
-      const mes = fechaNota.getMonth() + 1;
-      const anio = fechaNota.getFullYear();
-      const mesAnio = `${mes}-${anio}`;
-      const total = detallenp.reduce((acc, item) => acc + parseFloat(item.precio), 0);
-      const index = ventasMensuales.findIndex(item => item.mesAnio === mesAnio);
+
+    dataVentas.forEach(factura => {
+      const { fecha, detallefactura, descuento } = factura;
+      const fechaFactura = new Date(fecha);
+      const mes = fechaFactura.getMonth() + 1;
+      // const anio = fechaFactura.getFullYear();
+      // const mesAnio = `${mes}-${anio}`;
+      const total = detallefactura.reduce((acc, item) => acc + (parseFloat(item.precio) * item.cantidad), 0);
+      const descuentoAplicado = total * (descuento / 100); 
+      const totalFinal = total - descuentoAplicado;
+      const index = resultado.meses.findIndex(m => m === mes);
       if (index === -1) {
-        ventasMensuales.push({ mesAnio, total });
-      } else {
-        ventasMensuales[index].total += total;
+        resultado.meses.push(mes);
+        resultado.ventas.push(totalFinal);
+      }
+      else {
+        resultado.ventas[index] += totalFinal;
       }
     });
-    console.log(ventasMensuales);
-    */
 
     ordenarCompraVentaMensual(resultado);
     res.status(200).json( resultado );
