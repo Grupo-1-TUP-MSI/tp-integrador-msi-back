@@ -396,7 +396,7 @@ const updateNP = async (req, res) => {
       }
     });
 
-    res.status(200).json({ mensaje: 'Nota de pedido actualizada correctamente', status: 200 });
+    res.status(200).json({ data, mensaje: 'Nota de pedido actualizada correctamente', status: 200 });
   } catch (error) {
     console.log(error);    
     res.status(400).json({ mensaje: "Error al actualizar nota de pedido", status: 400 });
