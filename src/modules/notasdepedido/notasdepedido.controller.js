@@ -22,6 +22,7 @@ const getNPS = async (req, res) => {
               include: {
                 productos: {
                   select: {
+                    
                     nombre: true,
                   },
                 },
@@ -51,6 +52,7 @@ const getNPS = async (req, res) => {
           precio,
           estado,
           productosxproveedores: {
+            idproducto,
             productos: { nombre },
           },
         } = dnp;
@@ -60,7 +62,8 @@ const getNPS = async (req, res) => {
           cantidadrecibida,
           estado,
           precio: parseFloat(precio),
-          producto: nombre,
+          producto: nombre, 
+          idproducto
         };
       });
       return {
@@ -323,15 +326,17 @@ const updateNP = async (req, res) => {
 
     const arregloIdProductoProveedor = await Promise.all(
       detalles.map(async (detalle) => {
-        console.log(detalle);
+        console.log(detalle.idproducto);
+        console.log(idproveedor);
         const idProductoProveedor = await prisma.productosxproveedores.findFirst(
           {
             where: {
-              idproducto: parseInt(detalle.idProducto),
+              idproducto: parseInt(detalle.idproducto),
               idproveedor: parseInt(idproveedor),
             },
           }
         );
+        console.log(idProductoProveedor)
         return idProductoProveedor.id;
       })
     );
@@ -391,7 +396,7 @@ const updateNP = async (req, res) => {
 
     res.status(200).json({ mensaje: 'Nota de pedido actualizada correctamente', status: 200 });
   } catch (error) {
-    console.log(error);
+    console.log(error);    
     res.status(400).json({ mensaje: "Error al actualizar nota de pedido", status: 400 });
   }
 }
