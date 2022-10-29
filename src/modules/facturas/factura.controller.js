@@ -5,6 +5,7 @@ import {
   calcularPlazoEntrega,
   ordenarCompraVentaMensual,
 } from "../../utils/helpers";
+const {mercadoPago} = require('../../utils/mercadoPago');
 const prisma = new PrismaClient();
 
 const getFacturas = async (req, res) => {
@@ -252,8 +253,24 @@ const getFactforPDF = async (req, res) => {
   }
 }
 
+const procesarPago = async (req, res) => {
+    let preference = req.preference
+
+    mercadoPago.preferences.create(preference)
+    .then(function(response){
+        res.status(200).json({
+            global: response.body.id
+        })
+    }).catch(function(error){
+        res.status(400).json(
+            { mensaje: "Error al intentar procesar pago", status: 400 }
+        )
+    });
+}
+
 export { 
   getFacturas,
   createFactura,
-  getFactforPDF 
+  getFactforPDF, 
+  procesarPago 
 };
