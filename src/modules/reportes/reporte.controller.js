@@ -150,65 +150,8 @@ const getPieCharts = async (req, res) => {
       }
     });
 
-    // Solucionar con Array Methods
-    // const comprasMonto = compras.map(nota => {
-    //   const { detallenp } = nota;
-    //   const tipoCompra = nota.idtipocompra;
-    //   const total = detallenp.reduce((acc, item) => acc + (parseFloat(item.precio) * item.cantidadpedida), 0);
-    //   return { idtipocompra: tipoCompra, total };
-    // });
-
-    const comprasMonto = [];
-    compras.forEach(nota => {
-      const { idtipocompra, detallenp } = nota;
-      const total = detallenp.reduce((acc, item) => acc + (parseFloat(item.precio) * item.cantidadpedida), 0); 
-      const index = comprasMonto.findIndex(c => c.idTipo === idtipocompra); 
-      if (index === -1) { 
-        comprasMonto.push({ idTipo: idtipocompra, value: total }); 
-      } else { 
-        comprasMonto[index].value += total;
-      }
-    });
-
-    const comprasCantidad = [];
-    compras.forEach(nota => {
-      const { idtipocompra, detallenp } = nota;
-      const cantidad = detallenp.reduce((acc, item) => acc + item.cantidadpedida, 0);
-      const index = comprasCantidad.findIndex(c => c.idTipo === idtipocompra);
-      if (index === -1) {
-        comprasCantidad.push({ idTipo: idtipocompra, value: cantidad });
-      } else {
-        comprasCantidad[index].value += cantidad;
-      }
-    });
-    
-    const ventasMonto = [];
-    ventas.forEach(factura => {
-      const { idtipoventa, detallefactura, descuento } = factura;
-      const total = detallefactura.reduce((acc, item) => acc + (parseFloat(item.precio) * item.cantidad), 0);
-      const descuentoAplicado = total * (descuento / 100);
-      const totalFinal = total - descuentoAplicado;
-      const index = ventasMonto.findIndex(v => v.idTipo === idtipoventa);
-      if (index === -1) {
-        ventasMonto.push({ idTipo: idtipoventa, value: totalFinal });
-      } else {
-        ventasMonto[index].value += totalFinal;
-      }
-    });
-    
-    const ventasCantidad = [];
-    ventas.forEach(factura => {
-      const { idtipoventa, detallefactura } = factura;
-      const cantidad = detallefactura.reduce((acc, item) => acc + item.cantidad, 0);
-      const index = ventasCantidad.findIndex(v => v.idTipo === idtipoventa);
-      if (index === -1) {
-        ventasCantidad.push({ idTipo: idtipoventa, value: cantidad });
-      } else {
-        ventasCantidad[index].value += cantidad;
-      }
-    });
-
-    res.status(200).json({ comprasMonto, comprasCantidad, ventasMonto, ventasCantidad });
+    res.status(200).json({ compras, ventas });
+    await prisma.$disconnect();
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al obtener compras y ventas mensuales', status: 400 });
   } finally {
