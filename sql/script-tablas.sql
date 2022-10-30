@@ -91,6 +91,7 @@ CREATE TABLE Facturas (
 	,IdUsuario INT REFERENCES Usuarios(ID)
 	,IdCliente INT REFERENCES Clientes(ID)
 	,Estado bool
+	,Pagada bool
 	);
 
 CREATE TABLE DetalleFactura (
