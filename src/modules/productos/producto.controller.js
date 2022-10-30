@@ -21,6 +21,8 @@ const getProductos = async (req, res) => {
     res.status(200).json({ data: productos, status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: "Error al obtener productos", status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -36,6 +38,8 @@ const getProducto = async (req, res) => {
     res.status(200).json({ data: { id, nombre, descripcion, preciolista, stock, stockminimo, estado }, status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: "Error al obtener producto", status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -71,6 +75,8 @@ const getProductosProveedor = async (req, res) => {
     res.status(200).json({ data: productos, status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: "Error al obtener productos", status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
     
 }
@@ -90,6 +96,8 @@ const createProducto = async (req, res) => {
     res.status(200).json({ mensaje: "Producto creado correctamente", status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: "Error al crear producto", status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -122,6 +130,8 @@ const updateProducto = async (req, res) => {
     res.status(200).json({ mensaje: 'Producto actualizado correctamente', status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al actualizar producto', status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -163,6 +173,8 @@ const updateProductoProveedor = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(400).json({ mensaje: 'Error al actualizar producto', status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -191,6 +203,8 @@ const updateStock = async (req, res) => {
     res.status(200).json({ mensaje: 'Stock actualizado correctamente', status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al actualizar stock', status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -208,6 +222,8 @@ const deleteProducto = async (req, res) => {
     res.status(200).json({ mensaje: 'Producto eliminado correctamente', status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al eliminar producto', status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 }
 
