@@ -17,6 +17,8 @@ const getStock = async (req, res) => {
     res.status(200).json({ data, status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al obtener stock', status: 400 });
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -44,6 +46,8 @@ const getPendienteEntrega = async (req, res) => {
     res.status(200).json({ data: np, status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al obtener notas de pedido pendientes de entrega', status: 400 });
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -121,13 +125,45 @@ const getCompraVentaMensual = async (req, res) => {
     res.status(200).json( resultado );
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al obtener compras y ventas mensuales', status: 400 });
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+const getPieCharts = async (req, res) => {
+  try {
+    const compras = await prisma.notasdepedido.findMany({
+      where: {
+        idestadonp: 3
+      },
+      include: {
+        detallenp: true
+      }
+    });
+    
+    const ventas = await prisma.facturas.findMany({
+      where: {
+        estado: true
+      },
+      include: {
+        detallefactura: true
+      }
+    });
+
+    res.status(200).json({ compras, ventas });
+    await prisma.$disconnect();
+  } catch (error) {
+    res.status(400).json({ mensaje: 'Error al obtener compras y ventas mensuales', status: 400 });
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
 export {
   getStock,
   getPendienteEntrega,
-  getCompraVentaMensual
+  getCompraVentaMensual,
+  getPieCharts
 }
 
 // const data = await prisma.$queryRaw

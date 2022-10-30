@@ -26,6 +26,8 @@ const getGanancias = async (req, res) => {
     res.status(200).json( respuesta ); 
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al obtener ganancias', status: 400 });
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -62,6 +64,8 @@ const createGanancia = async (req, res) => {
     res.status(200).json({ mensaje: 'Ganancia creada correctamente', status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al crear ganancia', status: 400 });
+  } finally {
+    await prisma.$disconnect();
   }
 }
 

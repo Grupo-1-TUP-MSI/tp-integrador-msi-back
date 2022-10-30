@@ -35,6 +35,8 @@ const getClientes = async (req, res) => {
     res.status(200).json({ data: clientes, status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: "Error al obtener clientes", status: 400 });
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -89,6 +91,8 @@ const createCliente = async (req, res) => {
   } catch (error) {
     console.log(error)
     res.status(400).json({ mensaje: "Error al crear cliente", status: 400 });
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -108,6 +112,8 @@ const deleteCliente = async (req, res) => {
       .json({ mensaje: "Cliente eliminado correctamente", status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: "Error al eliminar cliente", status: 400 });
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -161,6 +167,8 @@ const updateCliente = async (req, res) => {
     res
       .status(400)
       .json({ mensaje: "Error al actualizar Cliente", status: 400 });
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -199,6 +207,8 @@ const getCliente = async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({ mensaje: "Error al obtener cliente", status: 400 });
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
