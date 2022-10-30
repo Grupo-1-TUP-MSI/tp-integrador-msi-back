@@ -86,7 +86,7 @@ CREATE TABLE Facturas (
 	,Fecha TIMESTAMP
 	,IdTipoVenta INT REFERENCES TiposVenta(ID)
 	,IdTipoPago INT REFERENCES TiposPago(ID)
-	,Numero INT
+	,Numero SERIAL
 	,FechaVencimiento TIMESTAMP
 	,IdUsuario INT REFERENCES Usuarios(ID)
 	,IdCliente INT REFERENCES Clientes(ID)
@@ -132,6 +132,13 @@ CREATE TABLE DetalleNP (
 	,Precio DECIMAL(13, 2)
 	,Descuento INT
 	,Estado bool
+	);
+
+	CREATE TABLE ganancias (
+	ID serial PRIMARY KEY NOT NULL
+	,vigencia TIMESTAMP
+	,porcentaje DECIMAL(5, 2)
+	,idusuario INT REFERENCES usuarios(ID)
 	);
 
 INSERT INTO TiposPago (Tipo)

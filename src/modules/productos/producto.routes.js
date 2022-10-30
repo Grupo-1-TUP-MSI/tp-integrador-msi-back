@@ -8,11 +8,13 @@ import {
   updateProducto,
   updateStock,
   updateProductoProveedor,
-  deleteProducto
+  deleteProducto,
+  getComparativa
 } from "./producto.controller";
 const router = Router();
 
 router.get("/", getProductos);
+router.get("/comparativa", getComparativa);
 router.get("/:id", getProducto);
 router.get("/proveedor/:id", getProductosProveedor);
 router.post("/", createProducto);

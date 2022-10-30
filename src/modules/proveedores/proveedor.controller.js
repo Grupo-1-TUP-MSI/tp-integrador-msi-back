@@ -221,5 +221,5 @@ export {
   getProveedor,
   createProveedor,
   updateProveedor,
-  deleteProveedor,
+  deleteProveedor
 };
