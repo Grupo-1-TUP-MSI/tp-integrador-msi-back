@@ -256,15 +256,13 @@ const getFactforPDF = async (req, res) => {
 const procesarPago = async (req, res) => {
     let preference = req.body.preference
 
-    mercadoPago.preferences.create(preference).then((res) => {
-        res.status(200).json({
-            global: res.body
-        })
-    }).catch((err) => {
-        res.status(400).json(
-            { mensaje: "Error al intentar procesar pago", status: 400 }
-        )
-    });
+
+    try {
+      const mp = await mercadoPago.preferences.create(preference)
+      
+      return res.json({data : mp, mensaje : "Pago procesado exitosamente", status: 200});
+
+  } catch (err) { return res.json({ mensaje : "Error al intentar procesar pago", status: 400}); }
 }
 
 export { 
