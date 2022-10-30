@@ -19,6 +19,8 @@ const getUsuarios = async (req, res) => {
     res.status(200).json({ data: usuarios, status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al obtener usuarios', status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -37,6 +39,8 @@ const getUsuario = async (req, res) => {
     res.status(200).json({ data: { id, usuario, rol, nombrecompleto, estado }, status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al obtener usuario', status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -69,6 +73,8 @@ const createUsuario = async (req, res) => {
     }
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al crear usuario', status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -105,6 +111,8 @@ const updateUsuario = async (req, res) => {
     res.status(200).json({ mensaje: 'Usuario actualizado correctamente', status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al actualizar usuario', status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -122,6 +130,8 @@ const deleteUsuario = async (req, res) => {
     res.status(200).json({ mensaje: 'Usuario eliminado correctamente', status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: 'Error al eliminar usuario', status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 };
 

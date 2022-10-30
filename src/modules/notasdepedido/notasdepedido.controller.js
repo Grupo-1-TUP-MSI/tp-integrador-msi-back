@@ -85,6 +85,8 @@ const getNPS = async (req, res) => {
     res
       .status(400)
       .json({ mensaje: "Error al obtener notas de pedido", status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -170,6 +172,8 @@ const getNPbyId = async (req, res) => {
     res
       .status(400)
       .json({ mensaje: "Error al obtener nota de pedido", status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -224,6 +228,8 @@ const createNP = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(400).json({ mensaje: "Error al crear nota de pedido", status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -305,6 +311,8 @@ const cambiarEstadoNP = async (req, res) => {
     res.status(200).json({ mensaje: "Estado actualizado con exito", status: 200 });
   } catch (error) {
     res.status(400).json({ mensaje: "Error al cambiar estado de nota de pedido", status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -400,6 +408,8 @@ const updateNP = async (req, res) => {
   } catch (error) {
     console.log(error);    
     res.status(400).json({ mensaje: "Error al actualizar nota de pedido", status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -503,10 +513,12 @@ const getNPforPDF = async (req, res) => {
     };
     res.status(200).json({ data: np, status: 200 });
   } catch (error) {
-    console.log(error)
+    
     res
       .status(400)
       .json({ mensaje: "Error al obtener nota de pedido para PDF", status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 }
 

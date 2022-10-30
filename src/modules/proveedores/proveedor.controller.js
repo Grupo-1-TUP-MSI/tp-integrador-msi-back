@@ -41,6 +41,8 @@ const getProveedores = async (req, res) => {
     res
       .status(400)
       .json({ mensaje: "Error al obtener proveedores", status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -84,6 +86,8 @@ const getProveedor = async (req, res) => {
     res
       .status(400)
       .json({ mensaje: "Error al obtener proveedor", status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -144,6 +148,8 @@ const createProveedor = async (req, res) => {
     res
       .status(400)
       .json({ mensaje: "Error al crear el proveedor", status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -181,6 +187,8 @@ const updateProveedor = async (req, res) => {
     res
       .status(400)
       .json({ mensaje: "Error al actualizar el proveedor", status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -203,6 +211,8 @@ const deleteProveedor = async (req, res) => {
     res
       .status(400)
       .json({ mensaje: "Error al eliminar proveedor", status: 400 });
+  }finally {
+    await prisma.$disconnect();
   }
 };
 
