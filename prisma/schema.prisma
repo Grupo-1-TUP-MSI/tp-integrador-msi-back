@@ -57,11 +57,11 @@ model facturas {
   fecha          DateTime?        @db.Timestamp(6)
   idtipoventa    Int?
   idtipopago     Int?
-  numero         Int?
   idusuario      Int?
   idcliente      Int?
   estado         Boolean?
   descuento      Decimal?         @default(0) @db.Decimal(5, 2)
+  numero         Int              @default(autoincrement())
   clientes       clientes?        @relation(fields: [idcliente], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tipospago      tipospago?       @relation(fields: [idtipopago], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tiposventa     tiposventa?      @relation(fields: [idtipoventa], references: [id], onDelete: NoAction, onUpdate: NoAction)

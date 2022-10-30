@@ -227,6 +227,20 @@ const deleteProducto = async (req, res) => {
   }
 }
 
+const getComparativa = async (req, res) => {
+  try {
+    const data = await prisma.$queryRaw`SELECT * FROM v_comparativaProveedores`;
+
+
+
+    res.status(200).json({ data: data, status: 200 });
+  } catch (error) {
+    res.status(400).json({ mensaje: "Error al obtener productos", status: 400 });
+  }finally {
+    await prisma.$disconnect();
+  }
+};
+
 export {
   getProductos,
   getProducto,
@@ -235,5 +249,6 @@ export {
   updateProducto,
   updateStock,
   updateProductoProveedor,
-  deleteProducto
+  deleteProducto,
+  getComparativa
 }
