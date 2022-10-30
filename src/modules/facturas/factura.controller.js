@@ -256,12 +256,11 @@ const getFactforPDF = async (req, res) => {
 const procesarPago = async (req, res) => {
     let preference = req.body.preference
 
-    mercadoPago.preferences.create(preference)
-    .then(function(response){
+    mercadoPago.preferences.create(preference).then((res) => {
         res.status(200).json({
-            global: response.body.id
+            global: res.body
         })
-    }).catch(function(error){
+    }).catch((err) => {
         res.status(400).json(
             { mensaje: "Error al intentar procesar pago", status: 400 }
         )
