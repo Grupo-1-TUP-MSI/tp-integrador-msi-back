@@ -5,7 +5,7 @@ import {
   calcularPlazoEntrega,
   ordenarCompraVentaMensual,
 } from "../../utils/helpers";
-const {mercadoPago} = require('../../utils/mercadoPago');
+import { mercadoPago } from '../../utils/mercadoPago'
 const prisma = new PrismaClient();
 
 const getFacturas = async (req, res) => {
@@ -68,6 +68,8 @@ const getFacturas = async (req, res) => {
     res.status(200).json(facturas);
   } catch (error) {
     res.status(400).json("Error al obtener las facturas");
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -149,6 +151,8 @@ const createFactura = async (req, res) => {
   } catch (error) {
     res.status(400).json("Error al crear la factura");
     // console.log(error);
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -250,6 +254,8 @@ const getFactforPDF = async (req, res) => {
     res
       .status(400)
       .json({ mensaje: "Error al obtener factura para PDF", status: 400 });
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -262,7 +268,11 @@ const procesarPago = async (req, res) => {
       
       return res.json({data : mp, mensaje : "Pago procesado exitosamente", status: 200});
 
-  } catch (err) { return res.json({ mensaje : "Error al intentar procesar pago", status: 400}); }
+  } catch (err) { 
+    return res.json({ mensaje : "Error al intentar procesar pago", status: 400}); 
+  } finally {
+    await prisma.$disconnect();
+  }
 }
 
 export { 
