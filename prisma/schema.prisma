@@ -62,6 +62,7 @@ model facturas {
   estado         Boolean?
   descuento      Decimal?         @default(0) @db.Decimal(5, 2)
   numero         Int              @default(autoincrement())
+  pagada         Boolean?
   clientes       clientes?        @relation(fields: [idcliente], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tipospago      tipospago?       @relation(fields: [idtipopago], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tiposventa     tiposventa?      @relation(fields: [idtipoventa], references: [id], onDelete: NoAction, onUpdate: NoAction)
