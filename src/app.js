@@ -5,7 +5,7 @@ import morgan from "morgan";
 
 import pruebaRoutes from "./modules/prueba/prueba.routes";
 import usuarioRoutes from "./modules/usuarios/usuario.routes";
-import proveedorRoutes from "./modules/proveedores/proveedor.routes";  
+import proveedorRoutes from "./modules/proveedores/proveedor.routes";
 import clienteRoutes from "./modules/clientes/cliente.routes";
 import authRoutes from "./modules/auth/auth.routes";
 import productoRoutes from "./modules/productos/producto.routes";
@@ -22,8 +22,6 @@ app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-
-
 app.get("/", (req, res) => res.send("Hello World!"));
 
 app.use("/prueba", pruebaRoutes);
@@ -32,7 +30,7 @@ app.use("/clientes", clienteRoutes);
 app.use("/auth", authRoutes);
 app.use("/productos", productoRoutes);
 app.use("/proveedores", proveedorRoutes);
-app.use("/productosproveedores",productoproveedorRoutes);
+app.use("/productosproveedores", productoproveedorRoutes);
 app.use("/np", notasdepedidoRoutes);
 app.use("/reportes", reporteRoutes);
 app.use("/facturas", facturaRoutes);

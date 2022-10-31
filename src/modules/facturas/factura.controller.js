@@ -1,11 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import { encryptPassword, matchPassword } from "../auth/auth.controller";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 import {
   calcularPlazoEntrega,
   ordenarCompraVentaMensual,
 } from "../../utils/helpers";
-import { mercadoPago } from '../../utils/mercadoPago'
+import { mercadoPago } from "../../utils/mercadoPago";
 const prisma = new PrismaClient();
 
 const getFacturas = async (req, res) => {
@@ -73,22 +73,14 @@ const getFacturas = async (req, res) => {
   }
 };
 
-
 const createFactura = async (req, res) => {
-  const token = req.header('x-access-token');
+  const token = req.header("x-access-token");
   const tokenDecoded = jwt.verify(token, process.env.SECRET);
   const { id } = tokenDecoded;
 
-  const {
-    fecha,
-    idCliente,
-    idTipoVenta,
-    idTipoPago,
-    descuento,
-    detalles,
-  } = req.body;
+  const { fecha, idCliente, idTipoVenta, idTipoPago, descuento, detalles } =
+    req.body;
   try {
-
     const ultimaFactura = await prisma.facturas.findFirst({
       select: {
         fecha: true,
@@ -101,8 +93,12 @@ const createFactura = async (req, res) => {
     const fechaUltimaFactura = new Date(ultimaFactura.fecha); // fecha de la última factura
     const fechaNuevaFactura = new Date(fecha); // fecha de la nueva factura
 
-    if(fechaUltimaFactura > fechaNuevaFactura) {
-      return res.status(400).json("La fecha de la factura no puede ser menor a la fecha de la última factura");
+    if (fechaUltimaFactura > fechaNuevaFactura) {
+      return res
+        .status(400)
+        .json(
+          "La fecha de la factura no puede ser menor a la fecha de la última factura"
+        );
     }
 
     console.log("fechaUltimaFactura", fechaUltimaFactura); // 2021-07-01T00:00:00.000Z
@@ -119,12 +115,15 @@ const createFactura = async (req, res) => {
         estado: true,
         detallefactura: {
           createMany: {
-            data: detalles.map( (df) => df = {
-              cantidad: parseInt(df.cantidad),
-              precio: parseFloat(df.precio),
-              idproducto: parseInt(df.idProducto),
-            })
-          }
+            data: detalles.map(
+              (df) =>
+                (df = {
+                  cantidad: parseInt(df.cantidad),
+                  precio: parseFloat(df.precio),
+                  idproducto: parseInt(df.idProducto),
+                })
+            ),
+          },
         },
       },
     });
@@ -147,15 +146,81 @@ const createFactura = async (req, res) => {
       );
     }
 
-    res.status(200).json( data ); // id de la factura creada
+    // #region Pagos con Mercado Pago
+    console.log("LLEGA ACA", idTipoPago);
+    if (parseInt(idTipoPago) === 2) {
+      console.log("llega aca");
+      const preference = crearPreferencia(req, data.id);
+      const mp = await mercadoPago.preferences.create(preference);
+
+      return res.json(mp.body.init_point);
+    }
+
+    res.status(200).json(data); // id de la factura creada
   } catch (error) {
+    console.log(error);
     res.status(400).json("Error al crear la factura");
-    // console.log(error);
   } finally {
     await prisma.$disconnect();
   }
-}
+};
 
+const calculoDescuento = (precio, descuento) => {
+  return precio - precio * (descuento / 100);
+};
+
+const crearPreferencia = (factura, id) => {
+  const { idCliente, descuento, detalles } = factura.body;
+  const clientUrl = factura.headers.referer;
+  const cliente = prisma.clientes.findUnique({
+    where: {
+      id: idCliente,
+    },
+  });
+
+  const preference = {
+    items: detalles.map((item) => {
+      const { idProducto, cantidad, precio } = item;
+      const producto = prisma.productos.findUnique({
+        where: {
+          id: idProducto,
+        },
+      });
+
+      return {
+        title: producto.nombre,
+        descripcion: producto.descripcion || "",
+        unit_price: calculoDescuento(precio, descuento) * 1.21,
+        quantity: cantidad,
+      };
+    }),
+    back_urls: {
+      success: `${clientUrl}ventas/facturacion/pago-exitoso/${id}`,
+      failure: `${clientUrl}ventas/facturacion/alta`,
+      pending: `${clientUrl}ventas/facturacion/alta`,
+    },
+    auto_return: "approved",
+    payment_methods: {
+      excluded_payment_methods: [
+        {
+          id: "amex",
+        },
+      ],
+      excluded_payment_types: [
+        {
+          id: "atm",
+        },
+      ],
+      installments: 6,
+    },
+    payer: {
+      name: cliente.nombrecompleto,
+      email: cliente.email,
+    },
+  };
+
+  return preference;
+};
 
 const getFactforPDF = async (req, res) => {
   const { idFactura } = req.params;
@@ -170,7 +235,7 @@ const getFactforPDF = async (req, res) => {
             nombre: true,
             direccion: true,
             telefono: true,
-            email: true
+            email: true,
           },
         },
         usuarios: {
@@ -179,17 +244,13 @@ const getFactforPDF = async (req, res) => {
           },
         },
         detallefactura: {
-          include: {       
-              
-                productos: {
-                  select: {
-                    nombre: true,
-                    descripcion: true,
-                
-                  },
-                },
-              
-            
+          include: {
+            productos: {
+              select: {
+                nombre: true,
+                descripcion: true,
+              },
+            },
           },
         },
       },
@@ -199,85 +260,61 @@ const getFactforPDF = async (req, res) => {
       fecha,
       numero,
       usuarios: { nombrecompleto },
-      clientes: { nombre, direccion, telefono, email },   
+      clientes: { nombre, direccion, telefono, email },
       detallefactura,
     } = data;
-    
-    
+
     const detalles = detallefactura.map((df) => {
-      
       const {
         id,
         cantidad,
         precio,
         productos: { nombre, descripcion },
-        
       } = df;
       return {
         id,
-        cantidad,        
+        cantidad,
         precio: parseFloat(precio),
         total: parseFloat(precio) * cantidad,
-        producto: nombre, descripcion,
+        producto: nombre,
+        descripcion,
       };
     });
-    
-    let acumTotal = 0;
-    let acumIVA   = 0;
-    let acumGravado = 0;
-    detalles.forEach(element => {
 
+    let acumTotal = 0;
+    let acumIVA = 0;
+    let acumGravado = 0;
+    detalles.forEach((element) => {
       acumGravado += parseFloat(element.precio) * parseInt(element.cantidad);
-      
     });
     acumTotal = acumGravado * 1.21;
-    acumIVA   = acumGravado * 0.21;
+    acumIVA = acumGravado * 0.21;
 
     //Pasar a formato local, tomará el formato de heroku mm/DD/yyyy
+    console.log(data);
+    console.log(fecha);
     let fechaLocale = fecha.toLocaleString();
-    
 
     const fact = {
       id,
       fechaLocale,
-      numero,          
+      numero,
       usuario: nombrecompleto,
       cliente: { nombre, direccion, telefono, email },
       detalles,
       acumTotal,
       acumGravado,
-      acumIVA
+      acumIVA,
     };
     res.status(200).json({ data: fact, status: 200 });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res
       .status(400)
       .json({ mensaje: "Error al obtener factura para PDF", status: 400 });
   } finally {
     await prisma.$disconnect();
   }
-}
-
-const procesarPago = async (req, res) => {
-    let preference = req.body.preference
-
-
-    try {
-      const mp = await mercadoPago.preferences.create(preference)
-      
-      return res.json({data : mp, mensaje : "Pago procesado exitosamente", status: 200});
-
-  } catch (err) { 
-    return res.json({ mensaje : "Error al intentar procesar pago", status: 400}); 
-  } finally {
-    await prisma.$disconnect();
-  }
-}
-
-export { 
-  getFacturas,
-  createFactura,
-  getFactforPDF, 
-  procesarPago 
 };
+
+export { getFacturas, createFactura, getFactforPDF };
