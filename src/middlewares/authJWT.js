@@ -19,6 +19,11 @@ const verifyToken = async (req, res, next) => {
       },
     });
     // console.log(user);
+    
+    // tomar fecha de expiracion del token y comparar con la fecha actual
+    const fechaExpiracion = new Date(decoded.exp * 1000); // fecha de expiracion del token
+    const fechaActual = new Date(); // fecha actual
+    if (fechaExpiracion < fechaActual) return res.status(401).json({ mensaje: "Token expirado" }); // 401: Unauthorized
 
     if (!user) return res.status(404).json({ mensaje: "Usuario no encontrado" });
 

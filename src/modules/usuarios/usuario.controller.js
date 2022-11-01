@@ -45,7 +45,7 @@ const getUsuario = async (req, res) => {
 };
 
 const createUsuario = async (req, res) => {
-  const { usuario, password, nombrecompleto, idRol} = req.body;
+  const { usuario, password, nombrecompleto, idRol } = req.body;
   try {
     const user = await prisma.usuarios.findFirst({
       where: {
