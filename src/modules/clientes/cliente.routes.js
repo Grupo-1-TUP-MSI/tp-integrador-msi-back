@@ -1,5 +1,5 @@
 import { Router } from "express";
-//import { verifyToken, isAdmin } from '../../middlewares'
+import { verifyToken, isAdmin, isVendedor } from '../../middlewares'
 import {
   getClientes,
   createCliente,
@@ -11,8 +11,8 @@ const router = Router();
 
 router.get("/", getClientes);
 router.get("/:id", getCliente);
-router.post("/", createCliente);
-router.put("/:id", updateCliente);
-router.delete("/:id",  deleteCliente);
+router.post("/", [verifyToken, isVendedor], createCliente);
+router.put("/:id", [verifyToken, isVendedor], updateCliente);
+router.delete("/:id", [verifyToken, isAdmin], deleteCliente);
 
 export default router;
