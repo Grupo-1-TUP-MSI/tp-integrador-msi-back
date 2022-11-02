@@ -70,7 +70,7 @@ const isComprador = async (req, res, next) => {
   });
   // console.log(rolFound, 'rol encontrado');
 
-  if (rolFound.rol === "COMPRADOR") {
+  if (rolFound.rol === "COMPRADOR" || rolFound.rol === "ADMINISTRADOR") {
     next();
     return;
   }
@@ -92,7 +92,7 @@ const isVendedor = async (req, res, next) => {
   });
   // console.log(rolFound, 'rol encontrado');
 
-  if (rolFound.rol === "VENDEDOR") {
+  if (rolFound.rol === "VENDEDOR" || rolFound.rol === "ADMINISTRADOR") {
     next();
     return;
   }

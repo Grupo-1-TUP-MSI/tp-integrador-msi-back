@@ -1,5 +1,5 @@
 import { Router } from "express";
-
+import { verifyToken, isAdmin, isComprador } from "../../middlewares";
 import {
   getNPS,
   getNPbyId,
@@ -9,14 +9,15 @@ import {
   getNPforPDF
   
 } from "./notasdepedido.controller";
+
 const router = Router();
 
 router.get("/", getNPS);
 router.get("/:idNotaPedido", getNPbyId);
 router.get("/pdf/:idNotaPedido", getNPforPDF);
-router.post("/", createNP);
-router.put("/estado/:idNotaPedido", cambiarEstadoNP);
-router.put("/:idNotaPedido", updateNP);
+router.post("/", [verifyToken, isComprador], createNP);
+router.put("/estado/:idNotaPedido", [verifyToken, isComprador], cambiarEstadoNP);
+router.put("/:idNotaPedido", [verifyToken, isComprador], updateNP);
 
 
 export default router;
