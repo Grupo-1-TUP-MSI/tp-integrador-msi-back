@@ -47,6 +47,9 @@ const getUsuario = async (req, res) => {
 const createUsuario = async (req, res) => {
   const { usuario, password, nombrecompleto, idRol } = req.body;
   try {
+
+    if(parseInt(idRol) === 1) return res.status(400).json({ mensaje: 'No se puede crear un usuario con rol de administrador', status: 400 });
+
     const user = await prisma.usuarios.findFirst({
       where: {
         usuario,
@@ -118,7 +121,12 @@ const updateUsuario = async (req, res) => {
 
 const deleteUsuario = async (req, res) => {
   const { id } = req.params;
+  const token = req.headers['x-access-token'];
+  
   try {
+    const decoded = await verifyToken(token);
+    if (decoded.id === parseInt(id)) return res.status(400).json({ mensaje: 'No se puede eliminar el usuario actual', status: 400 });
+
     const data = await prisma.usuarios.update({
       where: {
         id: parseInt(id),
