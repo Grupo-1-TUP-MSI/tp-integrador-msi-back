@@ -90,19 +90,20 @@ const createFactura = async (req, res) => {
       },
     });
 
-    const fechaUltimaFactura = new Date(ultimaFactura.fecha); // fecha de la última factura
     const fechaNuevaFactura = new Date(fecha); // fecha de la nueva factura
-
-    if (fechaUltimaFactura > fechaNuevaFactura) {
-      return res
-        .status(400)
-        .json(
-          "La fecha de la factura no puede ser menor a la fecha de la última factura"
-        );
+    if(ultimaFactura) {
+      const fechaUltimaFactura = new Date(ultimaFactura.fecha); // fecha de la última factura
+      if (fechaUltimaFactura > fechaNuevaFactura) {
+        return res
+          .status(400)
+          .json(
+            "La fecha de la factura no puede ser menor a la fecha de la última factura"
+          );
+      }
     }
 
-    console.log("fechaUltimaFactura", fechaUltimaFactura); // 2021-07-01T00:00:00.000Z
-    console.log("fechaNuevaFactura", fechaNuevaFactura); // 2021-07-01T00:00:00.000Z
+    // console.log("fechaUltimaFactura", fechaUltimaFactura); // 2021-07-01T00:00:00.000Z
+    // console.log("fechaNuevaFactura", fechaNuevaFactura); // 2021-07-01T00:00:00.000Z
 
     const data = await prisma.facturas.create({
       data: {
