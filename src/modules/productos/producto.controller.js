@@ -3,7 +3,21 @@ const prisma = new PrismaClient();
 
 const getProductos = async (req, res) => {
   try {
-    const data = await prisma.productos.findMany();
+    const data = await prisma.productos.findMany({
+      include: {
+        productosxproveedores: {
+          select: {
+            idproveedor: true,
+            precio: true,
+            proveedores: {
+              select: {
+                nombre: true
+              }
+            }
+          }
+        }
+      }
+    });
     const ganancia = await prisma.ganancias.findFirst({
       orderBy: {
         vigencia: 'desc'
@@ -12,11 +26,23 @@ const getProductos = async (req, res) => {
 
     const productos = []
     data.forEach(producto => {
-      const { id, nombre, descripcion, preciolista, stock, stockminimo, estado } = producto;
+      const { id, nombre, descripcion, preciolista, stock, stockminimo, estado, productosxproveedores } = producto;
       const precioLista = parseFloat(preciolista);
       const porcentaje = parseFloat(ganancia.porcentaje);
       const precioVenta = precioLista + (precioLista * porcentaje / 100);
-      productos.push({ id, nombre, descripcion, preciolista: precioLista, precioVenta, stock, stockminimo, estado });
+      const proveedoresRta = []
+      productosxproveedores.forEach(p => {
+        const { idproveedor, precio, proveedores } = p;
+        if (precio > 0) {
+          proveedoresRta.push({
+            idProveedor: idproveedor,
+            nombre: proveedores.nombre,
+            precio
+          })
+        }
+      });
+
+      productos.push({ id, nombre, descripcion, preciolista: precioLista, precioVenta, stock, stockminimo, estado, proveedores: proveedoresRta });
     });
     res.status(200).json({ data: productos, status: 200 });
   } catch (error) {
