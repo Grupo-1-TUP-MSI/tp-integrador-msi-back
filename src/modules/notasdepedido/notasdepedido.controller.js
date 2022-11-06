@@ -179,7 +179,13 @@ const getNPbyId = async (req, res) => {
 
 const createNP = async (req, res) => {
   console.log(req.body);
-  const { plazoentrega, idusuario, idproveedor, idtipocompra, detalles } = req.body;
+  const { plazoentrega, idproveedor, idtipocompra, detalles } = req.body;
+
+  // La validacion del Token se hace en el middleware de verifyToken
+  const token = req.headers["x-access-token"];
+  const tokenDecoded = jwt.verify(token, process.env.SECRET);
+  const idusuario = tokenDecoded.id;
+
   // const fecha = new Date().toISOString().split("T")[0];
   // fecha en formato datetime
   const fecha = new Date().toISOString();
