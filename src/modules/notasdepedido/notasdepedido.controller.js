@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import jwt from "jsonwebtoken";
 import { calcularPlazoEntrega, calcularPlazoEntregaFormated } from "../../utils/helpers";
 const prisma = new PrismaClient();
 
@@ -182,9 +183,10 @@ const createNP = async (req, res) => {
   const { plazoentrega, idproveedor, idtipocompra, detalles } = req.body;
 
   // La validacion del Token se hace en el middleware de verifyToken
-  const token = req.headers["x-access-token"];
+  const token = req.header("x-access-token");
   const tokenDecoded = jwt.verify(token, process.env.SECRET);
-  const idusuario = tokenDecoded.id;
+  const { id } = tokenDecoded;
+  const idusuario = id;
 
   // const fecha = new Date().toISOString().split("T")[0];
   // fecha en formato datetime
@@ -216,7 +218,7 @@ const createNP = async (req, res) => {
         vencimiento,
         idestadonp: 1,
         idtipocompra: parseInt(idtipocompra),
-        idusuario: parseInt(idusuario),
+        idusuario: idusuario,
         idproveedor: parseInt(idproveedor),
         detallenp: {
           createMany: {
