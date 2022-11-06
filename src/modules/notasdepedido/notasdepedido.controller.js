@@ -32,6 +32,9 @@ const getNPS = async (req, res) => {
           },
         },
       },
+      orderBy: {
+        fecha: "desc",
+      },
     });
     const nps = data.map((np) => {
       const {

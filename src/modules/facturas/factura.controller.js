@@ -34,6 +34,9 @@ const getFacturas = async (req, res) => {
           },
         },
       },
+      orderBy: {
+        fecha: "desc",
+      }
     });
 
     const facturas = data.map((factura) => {
