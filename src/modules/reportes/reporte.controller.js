@@ -53,9 +53,15 @@ const getPendienteEntrega = async (req, res) => {
 
 const getCompraVentaMensual = async (req, res) => {
   try {
+    const fecha12Atras = new Date();
+    fecha12Atras.setMonth(fecha12Atras.getMonth() - 12);
+
     const dataCompras = await prisma.notasdepedido.findMany({
       where: {
-        idestadonp: 3
+        idestadonp: 3,
+        fecha: {
+          gte: fecha12Atras
+        }
       },
       include: {
         detallenp: true
@@ -92,7 +98,10 @@ const getCompraVentaMensual = async (req, res) => {
 
     const dataVentas = await prisma.facturas.findMany({
       where: {
-        estado: true
+        estado: true,
+        fecha: {
+          gte: fecha12Atras
+        }
       },
       include: {
         detallefactura: true
