@@ -1,12 +1,14 @@
 import { PrismaClient } from "@prisma/client";
-import { encryptPassword, matchPassword } from '../auth/auth.controller'
-import { calcularPlazoEntrega, ordenarCompraVentaMensual } from "../../utils/helpers";
+import { encryptPassword, matchPassword } from "../auth/auth.controller";
+import {
+  calcularPlazoEntrega,
+  ordenarCompraVentaMensual,
+} from "../../utils/helpers";
 const prisma = new PrismaClient();
 
 const getStock = async (req, res) => {
   try {
-    const data = await prisma.$queryRaw
-      `select distinct  p.id, p.nombre 
+    const data = await prisma.$queryRaw`select distinct  p.id, p.nombre 
       from notasdepedido n 
       inner join detallenp d on n.id = d.idnp 
       inner join productosxproveedores pp on pp.id = d.idproductoproveedor 
@@ -16,28 +18,34 @@ const getStock = async (req, res) => {
 
     res.status(200).json({ data, status: 200 });
   } catch (error) {
-    res.status(400).json({ mensaje: 'Error al obtener stock', status: 400 });
+    res.status(400).json({ mensaje: "Error al obtener stock", status: 400 });
   } finally {
     await prisma.$disconnect();
   }
-}
+};
 
 const getPendienteEntrega = async (req, res) => {
   try {
     // traer solo 5 resultados
     const data = await prisma.notasdepedido.findMany({
       where: {
-        idestadonp: 2
+        idestadonp: 2,
       },
       include: {
         proveedores: true,
       },
-      take: 5
+      take: 5,
     });
 
     const np = [];
-    data.forEach(nota => {
-      const { id, version, vencimiento, proveedores:{nombre}, idtipocompra } = nota;
+    data.forEach((nota) => {
+      const {
+        id,
+        version,
+        vencimiento,
+        proveedores: { nombre },
+        idtipocompra,
+      } = nota;
       const fechaHoy = new Date();
       const demora = calcularPlazoEntrega(fechaHoy, vencimiento);
       np.push({ id, version, demora, proveedor: nombre, idtipocompra });
@@ -45,54 +53,70 @@ const getPendienteEntrega = async (req, res) => {
 
     res.status(200).json({ data: np, status: 200 });
   } catch (error) {
-    res.status(400).json({ mensaje: 'Error al obtener notas de pedido pendientes de entrega', status: 400 });
+    res.status(400).json({
+      mensaje: "Error al obtener notas de pedido pendientes de entrega",
+      status: 400,
+    });
   } finally {
     await prisma.$disconnect();
   }
-}
+};
 
 const getCompraVentaMensual = async (req, res) => {
   try {
-    const fecha12Atras = new Date();
-    fecha12Atras.setMonth(fecha12Atras.getMonth() - 12);
+    const desde =
+      req.query.desde !== "null"
+        ? new Date(req.query.desde)
+        : new Date().setDate(new Date().getDay() - 30);
+    const hasta =
+      req.query.hasta !== "null" ? new Date(req.query.hasta) : new Date();
+
+    let resultado = {
+      compras: [],
+      ventas: [],
+      dias: [],
+    };
+
+    // Add days between desde and hasta to array
+    for (let d = desde; d <= hasta; d.setDate(d.getDate() + 1)) {
+      resultado.dias.push(new Date(d));
+      resultado.compras.push(0);
+      resultado.ventas.push(0);
+    }
 
     const dataCompras = await prisma.notasdepedido.findMany({
       where: {
         idestadonp: 3,
         fecha: {
-          gte: fecha12Atras
-        }
+          gte: new Date(req.query.desde),
+          lte: new Date(req.query.hasta),
+        },
       },
       include: {
-        detallenp: true
+        detallenp: true,
       },
       orderBy: {
-        fecha: 'asc',
-      }
+        fecha: "asc",
+      },
     });
 
-    let resultado = {
-      compras: [],
-      ventas: [],
-      meses: []
-    }
-
-    dataCompras.forEach(nota => {
+    dataCompras.forEach((nota) => {
       const { fecha, detallenp } = nota;
       const fechaNota = new Date(fecha);
-      const mes = fechaNota.getMonth() + 1;
-      // const anio = fechaNota.getFullYear();
-      // const mesAnio = `${mes}-${anio}`;
-      const total = detallenp.reduce((acc, item) => acc + (parseFloat(item.precio) * item.cantidadpedida), 0);
-      const index = resultado.meses.findIndex(m => m === mes);
-      if (index === -1) {
-        resultado.meses.push(mes);
-        resultado.compras.push(total);
-        resultado.ventas.push(0);
-      }
-      else {
-        resultado.compras[index] += total;
-        resultado.ventas[index] += 0;
+      fechaNota.setUTCHours(0, 0, 0, 0);
+
+      const total = detallenp.reduce(
+        (acc, item) => acc + parseFloat(item.precio) * item.cantidadpedida,
+        0
+      );
+
+      // If date exists in array, add total to resultado.compras array
+      if (resultado.dias.find((dia) => dia.getTime() === fechaNota.getTime())) {
+        resultado.compras[
+          resultado.dias.findIndex(
+            (dia) => dia.getTime() === fechaNota.getTime()
+          )
+        ] += total;
       }
     });
 
@@ -100,163 +124,214 @@ const getCompraVentaMensual = async (req, res) => {
       where: {
         estado: true,
         fecha: {
-          gte: fecha12Atras
-        }
+          gte: new Date(req.query.desde),
+          lte: new Date(req.query.hasta),
+        },
       },
       include: {
-        detallefactura: true
+        detallefactura: true,
       },
       orderBy: {
-        fecha: 'asc',
-      }
+        fecha: "asc",
+      },
     });
 
-    dataVentas.forEach(factura => {
+    dataVentas.forEach((factura) => {
       const { fecha, detallefactura, descuento } = factura;
       const fechaFactura = new Date(fecha);
-      const mes = fechaFactura.getMonth() + 1;
-      // const anio = fechaFactura.getFullYear();
-      // const mesAnio = `${mes}-${anio}`;
-      const total = detallefactura.reduce((acc, item) => acc + (parseFloat(item.precio) * item.cantidad), 0);
-      const descuentoAplicado = total * (descuento / 100); 
+      fechaFactura.setUTCHours(0, 0, 0, 0);
+
+      const total = detallefactura.reduce(
+        (acc, item) => acc + parseFloat(item.precio) * item.cantidad,
+        0
+      );
+      const descuentoAplicado = total * (descuento / 100);
       const totalFinal = total - descuentoAplicado;
-      const index = resultado.meses.findIndex(m => m === mes);
-      if (index === -1) {
-        resultado.meses.push(mes);
-        resultado.ventas.push(totalFinal);
-      }
-      else {
-        resultado.ventas[index] += totalFinal;
+
+      // If date exists in array, add total to resultado.ventas array
+      if (
+        resultado.dias.find((dia) => dia.getTime() === fechaFactura.getTime())
+      ) {
+        resultado.ventas[
+          resultado.dias.findIndex(
+            (dia) => dia.getTime() === fechaFactura.getTime()
+          )
+        ] += totalFinal;
       }
     });
 
-    ordenarCompraVentaMensual(resultado);
-    res.status(200).json( resultado );
+    resultado.dias = resultado.dias.map((dia) => dia.toLocaleDateString());
+
+    res.status(200).json(resultado);
   } catch (error) {
-    res.status(400).json({ mensaje: 'Error al obtener compras y ventas mensuales', status: 400 });
+    res.status(400).json({
+      mensaje: "Error al obtener compras y ventas mensuales",
+      status: 400,
+    });
   } finally {
     await prisma.$disconnect();
   }
-}
+};
 
 const getPieCharts = async (req, res) => {
   try {
-  
-    const hoy = new Date();
-    const restaAnio = 1000 * 60 * 60 * 24 * 365;
-    const muestra = hoy.getTime() - restaAnio;
-    const unAnioAtras = new Date(muestra);
-    
-   
     const compras = await prisma.notasdepedido.findMany({
       where: {
-        idestadonp: 3
+        idestadonp: 3,
+        fecha: {
+          gte: new Date(req.query.desde),
+          lte: new Date(req.query.hasta),
+        },
       },
       include: {
-        detallenp: true
-      }
+        detallenp: true,
+      },
     });
-    
+
     const ventas = await prisma.facturas.findMany({
       where: {
-        estado: true
+        estado: true,
+        fecha: {
+          gte: new Date(req.query.desde),
+          lte: new Date(req.query.hasta),
+        },
       },
       include: {
-        detallefactura: true
-      }
+        detallefactura: true,
+      },
     });
 
-    // Solucionar con Array Methods
-    // const comprasMonto = compras.map(nota => {
-    //   const { detallenp } = nota;
-    //   const tipoCompra = nota.idtipocompra;
-    //   const total = detallenp.reduce((acc, item) => acc + (parseFloat(item.precio) * item.cantidadpedida), 0);
-    //   return { idtipocompra: tipoCompra, total };
-    // });
+    console.log("Compras seleccionadas: ", compras.length);
+    console.log("Ventas seleccionadas: ", ventas.length);
 
-    const comprasMonto = [];
-    compras.forEach(nota => {
-      
-      const { idtipocompra, fecha, detallenp } = nota;
-      const anio = new Date(fecha);
-      if(anio > unAnioAtras) {
-        const total = detallenp.reduce((acc, item) => acc + (parseFloat(item.precio) * item.cantidadpedida), 0); 
-        const index = comprasMonto.findIndex(c => c.idTipo === idtipocompra); 
-        if (index === -1) { 
-          
-          comprasMonto.push({ idTipo: idtipocompra, value: total }); 
-        } else { 
-          comprasMonto[index].value += total;
-        }
-      }
-    });
+    const tiposCompraPorMonto = [];
 
-    const comprasCantidad = [];
-    compras.forEach(nota => {
-     
-      const { idtipocompra, fecha} = nota;
-      const anio = new Date(fecha);
-      if(anio > unAnioAtras) {
-        const cantidad = 1;
-        const index = comprasCantidad.findIndex(c => c.idTipo === idtipocompra);
-        if (index === -1) {
-          comprasCantidad.push({ idTipo: idtipocompra, value: cantidad });
-        } else {
-          comprasCantidad[index].value += cantidad;
-        }
+    tiposCompraPorMonto.push(
+      {
+        idTipo: 1,
+        value: compras.reduce((acc, nota) => {
+          if (nota.idtipocompra === 1) {
+            acc += nota.detallenp.reduce(
+              (acc, item) =>
+                acc + parseFloat(item.precio) * item.cantidadpedida,
+              0
+            );
+          }
+          return acc;
+        }, 0),
+      },
+      {
+        idTipo: 2,
+        value: compras.reduce((acc, nota) => {
+          if (nota.idtipocompra === 2) {
+            acc += nota.detallenp.reduce(
+              (acc, item) =>
+                acc + parseFloat(item.precio) * item.cantidadpedida,
+              0
+            );
+          }
+          return acc;
+        }, 0),
       }
-    });
-    
-    const ventasMonto = [];
-    ventas.forEach(factura => {
-      const { idtipoventa, fecha, detallefactura, descuento } = factura;
-      const anio = new Date(fecha);
-      if(anio > unAnioAtras) {
-        const total = detallefactura.reduce((acc, item) => acc + (parseFloat(item.precio) * item.cantidad), 0);
-        const descuentoAplicado = total * (descuento / 100);
-        const totalFinal = total - descuentoAplicado;
-        const index = ventasMonto.findIndex(v => v.idTipo === idtipoventa);
-        if (index === -1) {
-          ventasMonto.push({ idTipo: idtipoventa, value: totalFinal });
-        } else {
-          ventasMonto[index].value += totalFinal;
-        }
-      }
-    });
- 
-    const ventasCantidad = [];
-    ventas.forEach(factura => {
-      const { idtipoventa, fecha} = factura;
-      const anio = new Date(fecha);
-      if(anio > unAnioAtras) {
-        const cantidad = 1;
-        const index = ventasCantidad.findIndex(v => v.idTipo === idtipoventa);
-        if (index === -1) {
-          ventasCantidad.push({ idTipo: idtipoventa, value: cantidad });
-        } else {
-          ventasCantidad[index].value += cantidad;
-        }
-      }
-    });
+    );
 
-    res.status(200).json({ comprasMonto, comprasCantidad, ventasMonto, ventasCantidad });
+    const tiposVentasMonto = [];
+
+    tiposVentasMonto.push(
+      {
+        idTipo: 1,
+        value: ventas.reduce((acc, factura) => {
+          if (factura.idtipoventa === 1) {
+            acc += factura.detallefactura.reduce(
+              (acc, item) => acc + parseFloat(item.precio) * item.cantidad,
+              0
+            );
+          }
+          return acc;
+        }, 0),
+      },
+      {
+        idTipo: 2,
+        value: ventas.reduce((acc, factura) => {
+          if (factura.idtipoventa === 2) {
+            acc += factura.detallefactura.reduce(
+              (acc, item) => acc + parseFloat(item.precio) * item.cantidad,
+              0
+            );
+          }
+          return acc;
+        }, 0),
+      }
+    );
+
+    const tiposComprasCantidad = [];
+
+    tiposComprasCantidad.push(
+      {
+        idTipo: 1,
+        value: compras.reduce((acc, nota) => {
+          if (nota.idtipocompra === 1) {
+            acc += 1;
+          }
+          return acc;
+        }, 0),
+      },
+      {
+        idTipo: 2,
+        value: compras.reduce((acc, nota) => {
+          if (nota.idtipocompra === 2) {
+            acc += 1;
+          }
+          return acc;
+        }, 0),
+      }
+    );
+
+    const tiposVentasCantidad = [];
+
+    tiposVentasCantidad.push(
+      {
+        idTipo: 1,
+        value: ventas.reduce((acc, factura) => {
+          if (factura.idtipoventa === 1) {
+            acc += factura.detallefactura.reduce((acc, item) => acc + 1, 0);
+          }
+          return acc;
+        }, 0),
+      },
+      {
+        idTipo: 2,
+        value: ventas.reduce((acc, factura) => {
+          if (factura.idtipoventa === 2) {
+            acc += factura.detallefactura.reduce((acc, item) => acc + 1, 0);
+          }
+          return acc;
+        }, 0),
+      }
+    );
+
+    res.status(200).json({
+      comprasMonto: tiposCompraPorMonto,
+      comprasCantidad: tiposComprasCantidad,
+      ventasMonto: tiposVentasMonto,
+      ventasCantidad: tiposVentasCantidad,
+    });
   } catch (error) {
-    res.status(400).json({ mensaje: 'Error al obtener compras y ventas mensuales', status: 400 });
+    res.status(400).json({
+      mensaje: "Error al obtener compras y ventas mensuales",
+      status: 400,
+    });
+    console.log(error);
   } finally {
     await prisma.$disconnect();
   }
-}
+};
 
-export {
-  getStock,
-  getPendienteEntrega,
-  getCompraVentaMensual,
-  getPieCharts
-}
+export { getStock, getPendienteEntrega, getCompraVentaMensual, getPieCharts };
 
 // const data = await prisma.$queryRaw
-    //   `SELECT np.id, np.version, pv.nombre, np.idtipocompra
-    //   FROM notasdepedido np
-    //   INNER JOIN proveedores pv ON np.idproveedor = pv.id
-    //   WHERE np.idestadonp = 2
-    //   ;`
+//   `SELECT np.id, np.version, pv.nombre, np.idtipocompra
+//   FROM notasdepedido np
+//   INNER JOIN proveedores pv ON np.idproveedor = pv.id
+//   WHERE np.idestadonp = 2
+//   ;`
